@@ -1,5 +1,6 @@
 import { ColorValue } from 'react-native';
 import { Redirect, Tabs } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Icon, IconName } from '../../components/Icon';
 import { stepRoute } from '../../features/flow';
 import { peek } from '../../services/api';
@@ -13,6 +14,7 @@ const icon =
 /** Guard: product routes need onboarding.step === 'done'; otherwise go to the current step. */
 export default function TabsLayout() {
   useServerVersion();
+  const insets = useSafeAreaInsets();
   const step = peek.step();
   if (step !== 'done') return <Redirect href={stepRoute[step]} />;
 
@@ -22,8 +24,9 @@ export default function TabsLayout() {
         headerShown: false,
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.muted,
-        tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border },
-        tabBarLabelStyle: { fontFamily: fonts.semibold, fontSize: 12 },
+        // Explicit height and line height so labels aren't clipped (with the home-indicator inset).
+        tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border, height: 58 + insets.bottom, paddingTop: 6 },
+        tabBarLabelStyle: { fontFamily: fonts.semibold, fontSize: 12, lineHeight: 16 },
         sceneStyle: { backgroundColor: colors.ground },
       }}
     >

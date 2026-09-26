@@ -12,6 +12,7 @@ import {
 } from '@expo-google-fonts/instrument-sans';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AgentChatProvider } from '../agent/AgentChat';
+import { DeviceFrame } from '../components/DeviceFrame';
 import { colors } from '../theme';
 
 SplashScreen.preventAutoHideAsync();
@@ -34,12 +35,14 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
+      <DeviceFrame>
       <AgentChatProvider>
         <StatusBar style="dark" />
         <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.ground } }}>
           <Stack.Screen name="(tabs)" options={{ gestureEnabled: false }} />
         </Stack>
       </AgentChatProvider>
+      </DeviceFrame>
     </SafeAreaProvider>
   );
 }
