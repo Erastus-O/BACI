@@ -11,7 +11,7 @@ Expo (React Native) prototype of **BACI, the finance intelligence agent**. It is
 ```bash
 cd mobile
 npm install
-cp .env.example .env          # add your ElevenLabs agent ID (optional, see below)
+cp .env.example .env          # optional: the BACI agent is already the default
 
 npm run web                   # quickest: browser, voice works through the browser mic
 npx expo run:ios              # or run:android: development build with native voice
@@ -34,7 +34,12 @@ To start from the finished product instead of onboarding, tap **Explore with sam
 
 ### 1. Point the app at your agent
 
-Public agent: set `EXPO_PUBLIC_ELEVENLABS_AGENT_ID` in `mobile/.env`.
+The **BACI** agent (`agent_8601m3f031tgf81ajvvcd0xdezab`, public) is built in as the default, so nothing needs configuring.
+- To use a different public agent, set `EXPO_PUBLIC_ELEVENLABS_AGENT_ID` in `mobile/.env`.
+- To turn the agent off and use only on-device answers (offline demos, e2e), set `EXPO_PUBLIC_ELEVENLABS_AGENT_ID=off`.
+- Env values are inlined into the bundle and cached, so restart with `npx expo start --clear` after changing `.env`.
+
+If a typed message can't reach the agent (a connection error, or no connection within 12 seconds), BACI answers it on the device and says so.
 
 Private agent (authentication on): keep the API key off the phone. Run the included token server and point the app at it:
 
@@ -63,7 +68,7 @@ The server exposes `/conversation-token` for voice over WebRTC and `/signed-url`
 
 > You are BACI, a UK personal finance information agent. Only use figures from BACI tools or BACI context updates. Never estimate or invent numbers. If a purchase has no price, ask "How much does the {item} cost?" and make no tool call until you have it. For finance, ask for the number of months and the APR. If the user doesn't know the APR, use 0% and say clearly that the real cost will be higher. If a tool says data couldn't be retrieved, say: "I couldn't retrieve your live financial data just now, so I won't guess at the numbers," and offer to try again. If a tool says permission is missing, say so and point to Settings › Data permissions. Debts are never cash. Give options, not advice: BACI provides information, not regulated financial advice.
 
-Without an agent ID, *Ask BACI* still works on-device (`src/agent/orchestrator.ts`). It answers balance, bills and affordability questions, and it asks for a missing price or finance term instead of guessing. Open-ended questions need the agent.
+With the agent off, *Ask BACI* still works on-device (`src/agent/orchestrator.ts`). It answers balance, bills and affordability questions, and it asks for a missing price or finance term instead of guessing. Open-ended questions need the agent.
 
 ## How it maps to the spec
 
@@ -103,7 +108,7 @@ Routes mirror the spec. Each screen has the artboard ID in a comment at the top.
 
 ```bash
 npx tsc --noEmit                              # typecheck
-npx expo export --platform web                # build → dist/
+EXPO_PUBLIC_ELEVENLABS_AGENT_ID=off npx expo export --clear --platform web   # build → dist/ (e2e expects on-device answers)
 npm i -D playwright && node e2e/journey.mjs   # spec §6 acceptance walk-through + design figures
 ```
 

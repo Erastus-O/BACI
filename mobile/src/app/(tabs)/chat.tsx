@@ -86,7 +86,7 @@ export default function Chat() {
           ) : null}
           {chat.error ? <Banner tone="danger">{chat.error}</Banner> : null}
           {!chat.configured && chat.items.length <= 1 ? (
-            <Muted style={{ fontSize: 12.5 }}>Voice agent not set up — answers are worked out on this device.</Muted>
+            <Muted style={{ fontSize: 12.5 }}>Voice agent is off in this build — answers are worked out on this device.</Muted>
           ) : null}
         </ScrollView>
 

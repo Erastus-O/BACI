@@ -3,12 +3,17 @@ import { PermissionsAndroid, Platform } from 'react-native';
 /**
  * ElevenLabs agent configuration, read from EXPO_PUBLIC_* env vars (see .env.example).
  *
- * - Public agent: set EXPO_PUBLIC_ELEVENLABS_AGENT_ID.
+ * - Public agent: the BACI agent below is the default; override with EXPO_PUBLIC_ELEVENLABS_AGENT_ID,
+ *   or set it to `off` to use only the on-device answers (offline demos, e2e).
  * - Private agent (auth enabled): run `npm run token-server` with ELEVENLABS_API_KEY
  *   and set EXPO_PUBLIC_BACI_TOKEN_URL. The API key never ships in the app.
  */
+/** The BACI agent on ElevenLabs. Public agent IDs aren't secret (they appear in widget embeds). */
+const DEFAULT_AGENT_ID = 'agent_8601m3f031tgf81ajvvcd0xdezab';
+const envAgent = process.env.EXPO_PUBLIC_ELEVENLABS_AGENT_ID?.trim();
+
 export const agentConfig = {
-  agentId: process.env.EXPO_PUBLIC_ELEVENLABS_AGENT_ID?.trim() || '',
+  agentId: envAgent === 'off' ? '' : envAgent || DEFAULT_AGENT_ID,
   tokenUrl: process.env.EXPO_PUBLIC_BACI_TOKEN_URL?.trim().replace(/\/$/, '') || '',
 };
 

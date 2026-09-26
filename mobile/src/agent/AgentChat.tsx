@@ -67,7 +67,10 @@ function AgentChatInner({ children }: { children: ReactNode }) {
   const [mode, setMode] = useState<SessionMode | null>(null);
   const [error, setError] = useState<string | null>(null);
   const ctx = useRef<Ctx>(initialCtx);
-  const queued = useRef<string[]>([]);
+  /** Typed messages waiting for the text session to connect: what the user typed, and what goes to the agent. */
+  const queued = useRef<{ text: string; payload: string; cardShown: boolean }[]>([]);
+  const connected = useRef(false);
+  const connectTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const push = useCallback((...next: NewItem[]) => setItems((prev) => [...prev, ...next.map(withId)]), []);
 
@@ -119,6 +122,25 @@ function AgentChatInner({ children }: { children: ReactNode }) {
     };
   }, [push]);
 
+  /** The agent couldn't be reached: answer waiting messages on the device instead of leaving them hanging. */
+  const answerLocally = useCallback(async () => {
+    clearTimeout(connectTimer.current);
+    const waiting = queued.current.splice(0);
+    if (!waiting.length) return;
+    push({ kind: 'system', text: "Couldn't reach the BACI agent, so this was answered on your device." });
+    for (const w of waiting) {
+      try {
+        const r = await respond(w.text, ctx.current);
+        ctx.current = r.ctx;
+        // Its affordability card is already on screen from send().
+        push(...(w.cardShown ? r.items.filter((i) => i.kind !== 'impact') : r.items));
+      } catch {
+        // respond() turns failures into a reply itself; nothing else to do.
+      }
+    }
+    setThinking(false);
+  }, [push]);
+
   const shareSnapshot = useCallback(async () => {
     try {
       sendContextualUpdate(describeSnapshot(await snapshotForAgent()));
@@ -130,18 +152,24 @@ function AgentChatInner({ children }: { children: ReactNode }) {
   const callbacks = useMemo(
     () => ({
       onConnect: () => {
+        connected.current = true;
+        clearTimeout(connectTimer.current);
         setError(null);
         // The agent gets the user's numbers even if no client tools are configured.
         shareSnapshot();
-        queued.current.splice(0).forEach((t) => sendUserMessage(t));
+        queued.current.splice(0).forEach((q) => sendUserMessage(q.payload));
       },
       onDisconnect: () => {
+        const neverConnected = !connected.current;
+        connected.current = false;
         setMode(null);
         setThinking(false);
+        if (neverConnected) answerLocally();
       },
       onError: (msg: string) => {
-        setError(msg);
         setThinking(false);
+        if (!connected.current && queued.current.length) answerLocally();
+        else setError(msg);
       },
       onMessage: ({ message: text, role }: { message: string; role: 'user' | 'agent' }) => {
         if (role === 'agent') {
@@ -158,7 +186,7 @@ function AgentChatInner({ children }: { children: ReactNode }) {
         setThinking(true);
       },
     }),
-    [push, sendUserMessage, shareSnapshot],
+    [answerLocally, push, sendUserMessage, shareSnapshot],
   );
 
   const open = useCallback(
@@ -171,15 +199,16 @@ function AgentChatInner({ children }: { children: ReactNode }) {
       } catch (e) {
         setMode(null);
         setThinking(false);
-        setError(e instanceof Error ? e.message : String(e));
+        if (m === 'text' && queued.current.length) answerLocally();
+        else setError(e instanceof Error ? e.message : String(e));
       }
     },
-    [callbacks, clientTools, startSession],
+    [answerLocally, callbacks, clientTools, startSession],
   );
 
   const startCall = useCallback(async () => {
     if (!isAgentConfigured) {
-      setError('Voice needs an ElevenLabs agent. Add EXPO_PUBLIC_ELEVENLABS_AGENT_ID to mobile/.env and restart.');
+      setError('Voice needs the ElevenLabs agent, which is turned off in this build (EXPO_PUBLIC_ELEVENLABS_AGENT_ID=off).');
       return;
     }
     if (status === 'connected' || status === 'connecting') endSession();
@@ -233,8 +262,17 @@ function AgentChatInner({ children }: { children: ReactNode }) {
         if (context) sendContextualUpdate(context);
         sendUserMessage(text);
       } else {
-        queued.current.push(context ? `${text}\n\n[Figures from the BACI app — use these, don't recalculate]\n${context}` : text);
-        if (status !== 'connecting') open('text');
+        queued.current.push({ text, cardShown: Boolean(context) && context !== TOOL_FAILED && context !== NO_CONSENT, payload: context ? `${text}\n\n[Figures from the BACI app — use these, don't recalculate]\n${context}` : text });
+        if (status !== 'connecting') {
+          clearTimeout(connectTimer.current);
+          connectTimer.current = setTimeout(() => {
+            if (!connected.current) {
+              endSession();
+              answerLocally();
+            }
+          }, 12000);
+          open('text');
+        }
       }
       return true;
     },

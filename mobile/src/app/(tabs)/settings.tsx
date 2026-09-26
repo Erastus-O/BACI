@@ -76,7 +76,7 @@ export default function Settings() {
             ? `ElevenLabs private agent via token server: ${agentConfig.tokenUrl}`
             : agentConfig.agentId
               ? `ElevenLabs agent: ${agentConfig.agentId}`
-              : 'Add EXPO_PUBLIC_ELEVENLABS_AGENT_ID to mobile/.env and restart. Until then, Ask BACI answers balance, bills and affordability questions on this device.'}
+              : 'Turned off (EXPO_PUBLIC_ELEVENLABS_AGENT_ID=off). Ask BACI answers balance, bills and affordability questions on this device.'}
         </Muted>
       </Card>
 

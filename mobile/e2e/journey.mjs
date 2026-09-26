@@ -1,6 +1,6 @@
 // Acceptance walk-through from docs/design/BACI_FLOW_SPEC.md §6, against the web build.
 //
-//   npx expo export --platform web            # builds ./dist
+//   EXPO_PUBLIC_ELEVENLABS_AGENT_ID=off npx expo export --clear --platform web   # builds ./dist, agent off
 //   npm i -D playwright && node e2e/journey.mjs [distDir] [screenshotDir]
 //
 // Serves the static build itself at 390×844 and fails on the first missing step.
