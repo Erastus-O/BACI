@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Harbour Bank — Approve access for BACI</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0;font-family:'Instrument Sans',system-ui,sans-serif;color:#10262A;background:#FFFFFF}
+a{color:#1F6F78}a:hover{color:#15535A}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #FFFFFF; display: flex; flex-direction: column">
+<div style="background: #1F6F78; color: #FFFFFF; padding: 20px 16px 18px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; align-items: center; justify-content: space-between">
+<div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 18px"><span style="width: 30px; height: 30px; border-radius: 8px; background: #FFFFFF; color: #1F6F78; display: flex; align-items: center; justify-content: center">H</span>Harbour Bank</div>
+<span style="font-size: 12px; opacity: 0.85; display: flex; gap: 4px; align-items: center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 11h12v9H6z"/><path d="M8.5 11V8a3.5 3.5 0 017 0v3"/></svg>Secure</span>
+</div>
+<div style="font-size: 13px; opacity: 0.9">Step {{stepNo}} of 2 · You're in Harbour Bank, not BACI</div>
+</div>
+<sc-if value="{{signIn}}" hint-placeholder-val="{{ true }}">
+<div style="flex-grow: 1; padding: 24px 16px 20px; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<h1 style="margin: 0; font-size: 24px; font-weight: 700; line-height: 1.2">Confirm it's you</h1>
+<p style="margin: 0; color: #4A5A5E; font-size: 15px; line-height: 1.45">BACI has asked to view your Harbour Bank accounts. Sign in the way you normally do.</p>
+</div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 28px 0">
+<span style="width: 84px; height: 84px; border-radius: 24px; border: 2px solid #1F6F78; color: #1F6F78; display: flex; align-items: center; justify-content: center"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 8V5a1 1 0 011-1h3"/><path d="M16 4h3a1 1 0 011 1v3"/><path d="M20 16v3a1 1 0 01-1 1h-3"/><path d="M8 20H5a1 1 0 01-1-1v-3"/><path d="M9 10v1"/><path d="M15 10v1"/><path d="M12 10v3h-1"/><path d="M9.5 16a4 4 0 005 0"/></svg></span>
+<div style="font-size: 14px; color: #4A5A5E">Face ID, fingerprint or passcode</div>
+</div>
+<div style="flex-grow: 1"></div>
+<button type="button" onClick="{{goApprove}}" style="height: 52px; border-radius: 12px; border: 0; background: #1F6F78; color: #FFFFFF; font: inherit; font-weight: 600; font-size: 16px">Sign in</button>
+<a href="ConnectFailed.dc.html" style="height: 44px; display: flex; align-items: center; justify-content: center; font-weight: 600; text-decoration: none">Cancel and return to BACI</a>
+</div>
+</sc-if>
+<sc-if value="{{approve}}" hint-placeholder-val="{{ false }}">
+<div style="flex-grow: 1; padding: 24px 16px 20px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<h1 style="margin: 0; font-size: 24px; font-weight: 700; line-height: 1.2">Share your account information with BACI?</h1>
+<p style="margin: 0; color: #4A5A5E; font-size: 15px; line-height: 1.45">BACI will get read-only access until <strong>25 Dec 2026</strong>.</p>
+</div>
+<div style="border: 1px solid #D5E2E4; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 8px; font-size: 14.5px">
+<div style="font-weight: 600">Information shared</div>
+<div>• Account details</div>
+<div>• Balances</div>
+<div>• Transactions</div>
+<div>• Direct debits and standing orders</div>
+</div>
+<div style="border: 1px solid #D5E2E4; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 8px; font-size: 14.5px">
+<div style="font-weight: 600">Accounts</div>
+<div style="display: flex; justify-content: space-between"><span>Harbour Current</span><span style="color: #4A5A5E">••1177</span></div>
+<div style="display: flex; justify-content: space-between"><span>Personal Loan</span><span style="color: #4A5A5E">••5520</span></div>
+<div style="display: flex; justify-content: space-between"><span>Joint Current</span><span style="color: #4A5A5E">••6402</span></div>
+</div>
+<div style="font-size: 13px; color: #4A5A5E">You can withdraw access in the Harbour Bank app or in BACI at any time.</div>
+<div style="flex-grow: 1"></div>
+<a href="Connecting.dc.html" style="height: 52px; border-radius: 12px; background: #1F6F78; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center">Approve</a>
+<a href="ConnectFailed.dc.html" style="height: 48px; border-radius: 12px; border: 1px solid #1F6F78; text-decoration: none; font-weight: 600; display: flex; align-items: center; justify-content: center">Don't allow</a>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"startStep":{"editor":"enum","options":["sign_in","approve"],"default":"sign_in"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { step: null };
+}
+renderVals() {
+const step = this.state.step ?? this.props.startStep ?? 'sign_in';
+return {
+signIn: step === 'sign_in',
+approve: step === 'approve',
+stepNo: step === 'sign_in' ? 1 : 2,
+goApprove: () => this.setState({ step: 'approve' })
+};
+}
+}
+</script>
+</body>
+</html>

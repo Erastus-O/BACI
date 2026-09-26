@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>BACI — Finding your accounts</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&amp;family=Instrument+Sans:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0;font-family:'Instrument Sans',system-ui,sans-serif;color:#16181D;background:#F5F3EE}
+a{color:#0F5C4C}a:hover{color:#0B4A3D}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F5F3EE; padding: 16px 16px 20px; display: flex; flex-direction: column; gap: 22px">
+<div style="display: flex; gap: 6px; padding-top: 56px">
+<div style="flex-grow: 1; height: 4px; border-radius: 4px; background: #0F5C4C"></div>
+<div style="flex-grow: 1; height: 4px; border-radius: 4px; background: #0F5C4C"></div>
+<div style="flex-grow: 1; height: 4px; border-radius: 4px; background: #0F5C4C"></div>
+<div style="flex-grow: 1; height: 4px; border-radius: 4px; background: #0F5C4C"></div>
+<div style="flex-grow: 1; height: 4px; border-radius: 4px; background: #E1DDD3"></div>
+</div>
+<div style="display: flex; justify-content: center; padding-top: 12px">
+<div style="width: 120px; height: 120px; border-radius: 50%; border: 1.5px solid #B9CFC7; display: flex; align-items: center; justify-content: center">
+<div style="width: 84px; height: 84px; border-radius: 50%; background: #E2F1E8; color: #1D6B45; display: flex; align-items: center; justify-content: center"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px; text-align: center">
+<h1 style="margin: 0; font-family: Fraunces, Georgia, serif; font-weight: 600; font-size: 28px; line-height: 1.15">Welcome back</h1>
+<p style="margin: 0; color: #5B606B; font-size: 15px; line-height: 1.45">Harbour Bank approved access. Here's what's happening.</p>
+</div>
+<ol role="list" aria-label="Connection progress" style="margin: 0; padding: 16px; list-style: none; background: #FFFFFF; border: 1px solid #E1DDD3; border-radius: 16px; display: flex; flex-direction: column; gap: 14px">
+<li style="display: flex; gap: 12px; align-items: center"><span style="width: 24px; height: 24px; border-radius: 50%; background: #E2F1E8; color: #1D6B45; display: flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span style="flex-grow: 1">Access approved at Harbour Bank</span><span style="font-size: 12.5px; color: #1D6B45; font-weight: 600">Done</span></li>
+<li style="display: flex; gap: 12px; align-items: center"><span style="width: 24px; height: 24px; border-radius: 50%; background: #E2F1E8; color: #1D6B45; display: flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span style="flex-grow: 1">Secure connection set up</span><span style="font-size: 12.5px; color: #1D6B45; font-weight: 600">Done</span></li>
+<li style="display: flex; gap: 12px; align-items: center"><span style="width: 24px; height: 24px; border-radius: 50%; background: #E2F1E8; color: #1D6B45; display: flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span style="flex-grow: 1">Found 3 accounts</span><span style="font-size: 12.5px; color: #1D6B45; font-weight: 600">Done</span></li>
+<li style="display: flex; gap: 12px; align-items: center; color: #5B606B"><span style="width: 24px; height: 24px; border-radius: 50%; border: 1.5px dashed #C9C4B8; box-sizing: border-box"></span><span style="flex-grow: 1">Choose which ones BACI can use</span><span style="font-size: 12.5px; font-weight: 600">Next</span></li>
+</ol>
+<div style="flex-grow: 1"></div>
+<a href="SelectAccounts.dc.html" style="height: 52px; border-radius: 999px; background: #0F5C4C; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center">Review 3 accounts</a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

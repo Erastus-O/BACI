@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>BACI — Reconnect Meridian Bank</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&amp;family=Instrument+Sans:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0;font-family:'Instrument Sans',system-ui,sans-serif;color:#16181D;background:#F5F3EE}
+a{color:#0F5C4C}a:hover{color:#0B4A3D}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F5F3EE; padding: 16px 16px 20px; display: flex; flex-direction: column; gap: 18px">
+<a href="Accounts.dc.html" aria-label="Back to accounts" style="width: 44px; height: 44px; box-sizing: border-box; border-radius: 999px; border: 1px solid #E1DDD3; background: #FFFFFF; display: flex; align-items: center; justify-content: center; color: #16181D"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></a>
+<div style="display: flex; gap: 12px; align-items: center">
+<span style="width: 48px; height: 48px; border-radius: 14px; background: #2F4B7C; color: #FFFFFF; font-weight: 700; font-size: 20px; display: flex; align-items: center; justify-content: center">M</span>
+<span style="display: flex; align-items: center; gap: 4px; padding: 3px 9px 3px 7px; border-radius: 999px; background: #FBE6E3; color: #B42318; font-size: 12.5px; font-weight: 600"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 4l9 16H3l9-16z"/><path d="M12 10v4"/></svg>Reconnect needed</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<h1 style="margin: 0; font-family: Fraunces, Georgia, serif; font-weight: 600; font-size: 28px; line-height: 1.15">Reconfirm access to Meridian Bank</h1>
+<p style="margin: 0; color: #5B606B; font-size: 15px; line-height: 1.45">UK banks ask you to reconfirm every 90 days. It takes about a minute, and your history and settings stay as they are.</p>
+</div>
+<div style="background: #FFFFFF; border: 1px solid #E1DDD3; border-radius: 16px; padding: 14px 16px; display: grid; grid-template-columns: 124px minmax(0, 1fr); gap: 8px 12px; font-size: 14px">
+<div style="color: #5B606B">Affected account</div><div>Everyday Current ••4821</div>
+<div style="color: #5B606B">Last synced</div><div>23 Sep, 09:14</div>
+<div style="color: #5B606B">Until you reconnect</div><div>Its balance is left out of answers — we won't show an estimate.</div>
+</div>
+<div style="flex-grow: 1"></div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<a href="BankAuthorise.dc.html" style="height: 52px; border-radius: 999px; background: #0F5C4C; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center">Continue to Meridian Bank</a>
+<a href="Accounts.dc.html" style="height: 44px; display: flex; align-items: center; justify-content: center; font-weight: 600; text-decoration: none">Not now</a>
+<a href="Accounts.dc.html" style="height: 44px; display: flex; align-items: center; justify-content: center; font-weight: 600; text-decoration: none; color: #B42318">Disconnect Meridian Bank instead</a>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

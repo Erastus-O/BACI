@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>BACI — Profile setup</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&amp;family=Instrument+Sans:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0;font-family:'Instrument Sans',system-ui,sans-serif;color:#16181D;background:#F5F3EE}
+a{color:#0F5C4C}a:hover{color:#0B4A3D}
+</style>
+</helmet>
+<div style="width: 390px; height: 940px; box-sizing: border-box; background: #F5F3EE; padding: 16px 16px 20px; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<a href="Consent.dc.html" aria-label="Back" style="width: 44px; height: 44px; box-sizing: border-box; border-radius: 999px; border: 1px solid #E1DDD3; background: #FFFFFF; display: flex; align-items: center; justify-content: center; color: #16181D"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></a>
+<div style="display: flex; gap: 6px">
+<div style="flex-grow: 1; height: 4px; border-radius: 4px; background: #0F5C4C"></div>
+<div style="flex-grow: 1; height: 4px; border-radius: 4px; background: #0F5C4C"></div>
+<div style="flex-grow: 1; height: 4px; border-radius: 4px; background: #0F5C4C"></div>
+<div style="flex-grow: 1; height: 4px; border-radius: 4px; background: #E1DDD3"></div>
+<div style="flex-grow: 1; height: 4px; border-radius: 4px; background: #E1DDD3"></div>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<h1 style="margin: 0; font-family: Fraunces, Georgia, serif; font-weight: 600; font-size: 28px; line-height: 1.15">A little about you</h1>
+<p style="margin: 0; color: #5B606B; font-size: 15px">Helps BACI frame answers around what matters to you. All optional.</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="inc" style="font-weight: 600; font-size: 15px">Annual take-home income</label>
+<div style="position: relative">
+<span style="position: absolute; left: 14px; top: 13px; color: #5B606B">£</span>
+<input id="inc" value="42,000" style="width: 100%; box-sizing: border-box; height: 48px; border: 1px solid #C9C4B8; border-radius: 10px; background: #FFFFFF; padding: 0 14px 0 30px; font: inherit">
+</div>
+<div style="font-size: 12.5px; color: #5B606B">We show this alongside what we detect in your accounts — never overwrite it.</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="font-weight: 600; font-size: 15px">Current status</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<span style="height: 40px; padding: 0 14px; border-radius: 999px; background: #0F5C4C; color: #FFFFFF; display: flex; align-items: center; font-size: 14px">Employed</span>
+<span style="height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid #C9C4B8; background: #FFFFFF; display: flex; align-items: center; font-size: 14px">Self-employed</span>
+<span style="height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid #C9C4B8; background: #FFFFFF; display: flex; align-items: center; font-size: 14px">Student</span>
+<span style="height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid #C9C4B8; background: #FFFFFF; display: flex; align-items: center; font-size: 14px">Other</span>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="font-weight: 600; font-size: 15px">Primary financial goal</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<span style="height: 40px; padding: 0 14px; border-radius: 999px; background: #0F5C4C; color: #FFFFFF; display: flex; align-items: center; font-size: 14px">Build savings</span>
+<span style="height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid #C9C4B8; background: #FFFFFF; display: flex; align-items: center; font-size: 14px">Pay off debt</span>
+<span style="height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid #C9C4B8; background: #FFFFFF; display: flex; align-items: center; font-size: 14px">Save for a home</span>
+<span style="height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid #C9C4B8; background: #FFFFFF; display: flex; align-items: center; font-size: 14px">Spend smarter</span>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="font-weight: 600; font-size: 15px">Investment risk approach</div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; background: #EFECE5; border-radius: 12px; padding: 4px">
+<span style="height: 38px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 14px">Cautious</span>
+<span style="height: 38px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 14px; background: #FFFFFF; font-weight: 600; box-shadow: 0 1px 2px rgba(22,24,29,0.08)">Balanced</span>
+<span style="height: 38px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 14px">Adventurous</span>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="font-weight: 600; font-size: 15px">Insight frequency</div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; background: #EFECE5; border-radius: 12px; padding: 4px">
+<span style="height: 38px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 14px">Daily</span>
+<span style="height: 38px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 14px; background: #FFFFFF; font-weight: 600; box-shadow: 0 1px 2px rgba(22,24,29,0.08)">Weekly</span>
+<span style="height: 38px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 14px">Monthly</span>
+</div>
+</div>
+<div style="flex-grow: 1"></div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<a href="Connect.dc.html" style="height: 52px; border-radius: 999px; background: #0F5C4C; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center">Continue</a>
+<a href="Connect.dc.html" style="height: 44px; border-radius: 999px; color: #0F5C4C; text-decoration: none; font-weight: 600; display: flex; align-items: center; justify-content: center">Skip for now</a>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":940}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>
