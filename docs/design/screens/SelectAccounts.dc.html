@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>BACI — Choose accounts</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&amp;family=Instrument+Sans:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0;font-family:'Instrument Sans',system-ui,sans-serif;color:#16181D;background:#F5F3EE}
+a{color:#0F5C4C}a:hover{color:#0B4A3D}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F5F3EE; padding: 16px 16px 20px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; gap: 6px; padding-top: 56px">
+<div style="flex-grow: 1; height: 4px; border-radius: 4px; background: #0F5C4C"></div>
+<div style="flex-grow: 1; height: 4px; border-radius: 4px; background: #0F5C4C"></div>
+<div style="flex-grow: 1; height: 4px; border-radius: 4px; background: #0F5C4C"></div>
+<div style="flex-grow: 1; height: 4px; border-radius: 4px; background: #0F5C4C"></div>
+<div style="flex-grow: 1; height: 4px; border-radius: 4px; background: #E1DDD3"></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div style="font-size: 13px; font-weight: 650; letter-spacing: 0.06em; text-transform: uppercase; color: #5B606B">Harbour Bank</div>
+<h1 style="margin: 0; font-family: Fraunces, Georgia, serif; font-weight: 600; font-size: 28px; line-height: 1.15">Choose accounts</h1>
+<p style="margin: 0; color: #5B606B; font-size: 15px">We found 3 accounts. BACI will only analyse the ones you tick.</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; min-height: 56px; box-sizing: border-box; border: 1px solid #E1DDD3; border-radius: 10px; background: #FFFFFF">
+<input type="checkbox" checked="{{allOn}}" onChange="{{toggleAll}}" style="width: 20px; height: 20px; accent-color: #0F5C4C">
+<span style="font-weight: 600">Select all</span>
+</label>
+<sc-for list="{{accounts}}" as="a" hint-placeholder-count="2">
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; min-height: 56px; box-sizing: border-box; border: 1px solid #E1DDD3; border-radius: 10px; background: #FFFFFF">
+<input type="checkbox" checked="{{a.on}}" onChange="{{a.toggle}}" style="width: 20px; height: 20px; accent-color: #0F5C4C">
+<span style="display: flex; flex-direction: column"><span style="font-weight: 600">{{a.name}}</span><span style="font-size: 13px; color: #5B606B">{{a.detail}}</span></span>
+</label>
+</sc-for>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; min-height: 56px; box-sizing: border-box; border: 1px solid #E1DDD3; border-radius: 10px; background: #FFFFFF; opacity: 0.65">
+<input type="checkbox" disabled style="width: 20px; height: 20px">
+<span style="display: flex; flex-direction: column"><span style="font-weight: 600">Joint Current</span><span style="font-size: 13px; color: #5B606B">Current account ••6402 · already connected via Meridian</span></span>
+</label>
+</div>
+<div style="display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 10px; background: #E5EBF5; color: #1F365C; font-size: 13.5px">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" style="flex-shrink: 0"><path d="M12 21a9 9 0 100-18 9 9 0 000 18z"/><path d="M12 11v5"/><path d="M12 7.8v.1"/></svg>
+<span>Duplicates are detected automatically, so an account is never counted twice. You can change this later in Accounts.</span>
+</div>
+<div style="flex-grow: 1"></div>
+<sc-if value="{{canContinue}}" hint-placeholder-val="{{ true }}">
+<a href="Syncing.dc.html" style="height: 52px; border-radius: 999px; background: #0F5C4C; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center">{{ctaLabel}}</a>
+</sc-if>
+<sc-if value="{{cannotContinue}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="height: 52px; border-radius: 999px; background: #D7D3CA; color: #454A54; font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center">Select at least one account</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { on: { current: true, loan: true } };
+}
+renderVals() {
+const on = this.state.on;
+const defs = [
+{ id: 'current', name: 'Harbour Current', detail: 'Current account ••1177' },
+{ id: 'loan', name: 'Personal Loan', detail: 'Loan ••5520' }
+];
+const count = defs.filter((d) => on[d.id]).length;
+const allOn = count === defs.length;
+return {
+accounts: defs.map((d) => ({
+...d,
+on: Boolean(on[d.id]),
+toggle: () => this.setState({ on: { ...on, [d.id]: !on[d.id] } })
+})),
+allOn: allOn,
+toggleAll: () => this.setState({ on: { current: !allOn, loan: !allOn } }),
+canContinue: count > 0,
+cannotContinue: count === 0,
+ctaLabel: count === 1 ? 'Use 1 account' : 'Use ' + count + ' accounts'
+};
+}
+}
+</script>
+</body>
+</html>

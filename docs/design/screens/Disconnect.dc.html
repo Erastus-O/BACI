@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>BACI — Disconnect a bank</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&amp;family=Instrument+Sans:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0;font-family:'Instrument Sans',system-ui,sans-serif;color:#16181D;background:#F5F3EE}
+a{color:#0F5C4C}a:hover{color:#0B4A3D}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #8E8C88; position: relative; display: flex; flex-direction: column; justify-content: center; padding: 16px">
+<div role="dialog" aria-modal="true" aria-labelledby="dlg-t" style="background: #FFFFFF; border-radius: 24px; padding: 24px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 20px 60px rgba(0,0,0,0.25)">
+<h1 id="dlg-t" style="margin: 0; font-family: Fraunces, Georgia, serif; font-weight: 600; font-size: 24px">Disconnect Harbour Bank?</h1>
+<p style="margin: 0; font-size: 15px; line-height: 1.45">BACI will stop syncing and remove its copy of the transactions for:</p>
+<ul style="margin: 0; padding-left: 18px; font-size: 15px; line-height: 1.6">
+<li>Harbour Current (Current account)</li>
+<li>Personal Loan (Loan)</li>
+</ul>
+<p style="margin: 0; font-size: 13.5px; color: #5B606B; line-height: 1.45">Your other accounts and your profile stay as they are. Insights and answers will be recalculated without these accounts — for example, the StreamFlix duplicate insight will disappear.</p>
+<a href="Accounts.dc.html" style="height: 52px; border-radius: 999px; background: #B42318; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center">Disconnect</a>
+<a href="Accounts.dc.html" style="height: 52px; box-sizing: border-box; border-radius: 999px; border: 1px solid #C9C4B8; background: #FFFFFF; color: #16181D; text-decoration: none; font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center">Cancel</a>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

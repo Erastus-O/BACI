@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>BACI — Data consent</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&amp;family=Instrument+Sans:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0;font-family:'Instrument Sans',system-ui,sans-serif;color:#16181D;background:#F5F3EE}
+a{color:#0F5C4C}a:hover{color:#0B4A3D}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F5F3EE; padding: 16px 16px 20px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<a href="Main.dc.html" aria-label="Back" style="width: 44px; height: 44px; box-sizing: border-box; border-radius: 999px; border: 1px solid #E1DDD3; background: #FFFFFF; display: flex; align-items: center; justify-content: center; color: #16181D"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></a>
+<div style="display: flex; gap: 6px">
+<div style="flex-grow: 1; height: 4px; border-radius: 4px; background: #0F5C4C"></div>
+<div style="flex-grow: 1; height: 4px; border-radius: 4px; background: #0F5C4C"></div>
+<div style="flex-grow: 1; height: 4px; border-radius: 4px; background: #E1DDD3"></div>
+<div style="flex-grow: 1; height: 4px; border-radius: 4px; background: #E1DDD3"></div>
+<div style="flex-grow: 1; height: 4px; border-radius: 4px; background: #E1DDD3"></div>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<h1 style="margin: 0; font-family: Fraunces, Georgia, serif; font-weight: 600; font-size: 28px; line-height: 1.15">What BACI can look at</h1>
+<p style="margin: 0; color: #5B606B; font-size: 15px; line-height: 1.45">Choose what BACI may analyse. Change or revoke this any time. BACI can't move money.</p>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: center">
+<div style="font-size: 14px; color: #5B606B">8 of 9 allowed</div>
+<button type="button" style="height: 36px; padding: 0 12px; border: 0; background: transparent; color: #0F5C4C; font: inherit; font-weight: 600; font-size: 14px">Allow all</button>
+</div>
+<div style="background: #FFFFFF; border: 1px solid #E1DDD3; border-radius: 16px; padding: 0 16px; display: flex; flex-direction: column">
+<sc-for list="{{rows}}" as="row" hint-placeholder-count="9">
+<div style="display: flex; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid #EFECE5">
+<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 1px">
+<div style="font-weight: 600; font-size: 15px">{{row.label}}</div>
+<div style="font-size: 12.5px; color: #5B606B; line-height: 1.35">{{row.desc}}</div>
+</div>
+<div style="width: 44px; height: 26px; flex-shrink: 0; border-radius: 999px; background: {{row.track}}; display: flex; align-items: center; justify-content: {{row.align}}; padding: 0 3px; box-sizing: border-box">
+<div style="width: 20px; height: 20px; border-radius: 50%; background: #FFFFFF"></div>
+</div>
+</div>
+</sc-for>
+</div>
+<div style="flex-grow: 1"></div>
+<a href="Profile.dc.html" style="height: 52px; border-radius: 999px; background: #0F5C4C; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center">Agree and continue</a>
+<div style="font-size: 12px; color: #5B606B; text-align: center">Consent version 2026-09.1 · we record when you agree and what you allowed</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+const on = { track: '#0F5C4C', align: 'flex-end' };
+const off = { track: '#C9C4B8', align: 'flex-start' };
+return {
+rows: [
+{ label: 'Transaction history', desc: 'Payments in and out, to understand patterns', ...on },
+{ label: 'Spending categories', desc: 'Groceries, transport, eating out…', ...on },
+{ label: 'Bills & direct debits', desc: 'Warnings before regular payments land', ...on },
+{ label: 'Savings & ISAs', desc: 'So answers reflect all the money you hold', ...on },
+{ label: 'Credit cards', desc: 'Balances and limits — never counted as cash', ...on },
+{ label: 'Loans & mortgages', desc: 'Outstanding balances and repayments', ...on },
+{ label: 'Overdraft usage', desc: 'When and how often you dip into it', ...on },
+{ label: 'Investments & pensions', desc: 'Where your provider supports it', ...off },
+{ label: 'Income signals', desc: 'Detecting salary and regular income', ...on }
+]
+};
+}
+}
+</script>
+</body>
+</html>

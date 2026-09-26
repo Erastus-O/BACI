@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>BACI — Data permissions</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&amp;family=Instrument+Sans:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0;font-family:'Instrument Sans',system-ui,sans-serif;color:#16181D;background:#F5F3EE}
+a{color:#0F5C4C}a:hover{color:#0B4A3D}
+</style>
+</helmet>
+<div style="width: 390px; height: 1000px; box-sizing: border-box; background: #F5F3EE; padding: 20px 16px; display: flex; flex-direction: column; gap: 14px">
+<a href="Settings.dc.html" style="align-self: flex-start; height: 40px; display: flex; align-items: center; gap: 6px; text-decoration: none; font-weight: 600"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Settings</a>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="margin: 0; font-family: Fraunces, Georgia, serif; font-weight: 600; font-size: 28px">Data permissions</h1>
+<div style="font-size: 12.5px; color: #5B606B">Version 2026-09.1 · first agreed 26 Sep 2026 · updated 26 Sep, 16:20</div>
+</div>
+<sc-if value="{{changed}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 10px; background: #E5EBF5; color: #1F365C; font-size: 13.5px">
+<span>Unsaved change. Turning a category off removes it from insights and answers straight away — for example, “Savings &amp; ISAs” off means savings aren't counted in “Can I afford this?”.</span>
+</div>
+</sc-if>
+<div style="background: #FFFFFF; border: 1px solid #E1DDD3; border-radius: 16px; padding: 0 16px; display: flex; flex-direction: column">
+<sc-for list="{{rows}}" as="row" hint-placeholder-count="9">
+<label style="display: flex; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid #EFECE5; cursor: pointer">
+<span style="flex-grow: 1; display: flex; flex-direction: column; gap: 1px">
+<span style="font-weight: 600; font-size: 15px">{{row.label}}</span>
+<span style="font-size: 12.5px; color: #5B606B; line-height: 1.35">{{row.desc}}</span>
+</span>
+<input type="checkbox" role="switch" checked="{{row.on}}" onChange="{{row.toggle}}" aria-label="{{row.label}}" style="width: 44px; height: 26px; accent-color: #0F5C4C; flex-shrink: 0">
+</label>
+</sc-for>
+</div>
+<button type="button" style="height: 52px; border-radius: 999px; border: 0; background: #0F5C4C; color: #FFFFFF; font: inherit; font-weight: 600; font-size: 16px">Save permissions</button>
+<a href="Revoked.dc.html" style="height: 44px; display: flex; align-items: center; justify-content: center; color: #B42318; text-decoration: none; font-weight: 600">Revoke all access</a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1000}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { off: { inv: true } };
+}
+renderVals() {
+const defs = [
+['tx', 'Transaction history', 'Payments in and out, to understand patterns'],
+['cat', 'Spending categories', 'Groceries, transport, eating out…'],
+['bills', 'Bills & direct debits', 'Warnings before regular payments land'],
+['sav', 'Savings & ISAs', 'So answers reflect all the money you hold'],
+['cc', 'Credit cards', 'Balances and limits — never counted as cash'],
+['loan', 'Loans & mortgages', 'Outstanding balances and repayments'],
+['od', 'Overdraft usage', 'When and how often you dip into it'],
+['inv', 'Investments & pensions', 'Where your provider supports it'],
+['inc', 'Income signals', 'Detecting salary and regular income']
+];
+const off = this.state.off;
+return {
+changed: Object.keys(off).some((k) => off[k] !== (k === 'inv')),
+rows: defs.map(([id, label, desc]) => ({
+label: label,
+desc: desc,
+on: !off[id],
+toggle: () => this.setState({ off: { ...off, [id]: !off[id] } })
+}))
+};
+}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>BACI — End-to-end flow map</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&amp;family=Instrument+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap">
+<style>
+body{margin:0;font-family:'Instrument Sans',system-ui,sans-serif;color:#16181D;background:#F5F3EE}
+a{color:#0F5C4C}a:hover{color:#0B4A3D}
+</style>
+</helmet>
+<div style="width: 2650px; height: 1760px; box-sizing: border-box; background: #F5F3EE; position: relative; overflow: hidden">
+<div style="position: absolute; left: 40px; top: 36px; display: flex; flex-direction: column; gap: 6px">
+<h1 style="margin: 0; font-family: Fraunces, Georgia, serif; font-weight: 600; font-size: 44px">BACI — end-to-end flow</h1>
+<p style="margin: 0; font-size: 18px; color: #5B606B">Every screen, its route in the app, the API it calls, and where each action goes. Artboard IDs match the canvas and docs/design/BACI_FLOW_SPEC.md.</p>
+</div>
+<svg width="2650" height="1760" viewBox="0 0 2650 1760" style="position: absolute; left: 0; top: 0" aria-hidden="true">
+<path d="{{linePath}}" fill="none" stroke="#8A8F99" stroke-width="2"></path>
+<path d="{{dashPath}}" fill="none" stroke="#B42318" stroke-width="2" stroke-dasharray="6 5"></path>
+<path d="{{headPath}}" fill="#8A8F99" stroke="none"></path>
+<path d="{{dashHeadPath}}" fill="#B42318" stroke="none"></path>
+</svg>
+<sc-for list="{{labels}}" as="l" hint-placeholder-count="12">
+<div style="position: absolute; left: {{l.x}}px; top: {{l.y}}px; transform: translate(-50%, -50%); background: #F5F3EE; padding: 2px 6px; border-radius: 6px; font-size: 13px; font-weight: 600; color: {{l.colour}}; white-space: nowrap">{{l.text}}</div>
+</sc-for>
+<sc-for list="{{nodes}}" as="n" hint-placeholder-count="26">
+<div style="position: absolute; left: {{n.x}}px; top: {{n.y}}px; width: 240px; min-height: 110px; box-sizing: border-box; background: #FFFFFF; border: 1.5px solid {{n.border}}; border-radius: 14px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 1px 2px rgba(22,24,29,0.06)">
+<div style="display: flex; align-items: center; gap: 8px">
+<span style="font-size: 12px; font-weight: 700; padding: 2px 7px; border-radius: 6px; background: {{n.tint}}; color: {{n.ink}}">{{n.id}}</span>
+<span style="font-weight: 650; font-size: 15px; line-height: 1.2">{{n.title}}</span>
+</div>
+<div style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11.5px; color: #2F4B7C">{{n.route}}</div>
+<div style="font-size: 12px; color: #5B606B; line-height: 1.35">{{n.api}}</div>
+<sc-if value="{{n.hasJump}}" hint-placeholder-val="{{ false }}">
+<div style="font-size: 12px; font-weight: 600; color: #A84F1F">{{n.jump}}</div>
+</sc-if>
+</div>
+</sc-for>
+<div style="position: absolute; left: 40px; top: 470px; width: 520px; display: flex; flex-direction: column; gap: 14px; background: #FFFFFF; border: 1px solid #E1DDD3; border-radius: 16px; padding: 18px 20px">
+<div style="font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #5B606B">How to read this</div>
+<sc-for list="{{legend}}" as="g" hint-placeholder-count="5">
+<div style="display: flex; gap: 10px; align-items: center; font-size: 15px">
+<span style="width: 18px; height: 18px; border-radius: 5px; background: {{g.tint}}; border: 1.5px solid {{g.border}}"></span>{{g.label}}
+</div>
+</sc-for>
+<div style="display: flex; gap: 10px; align-items: center; font-size: 15px"><span style="width: 28px; height: 0; border-top: 2px solid #8A8F99"></span>Main path</div>
+<div style="display: flex; gap: 10px; align-items: center; font-size: 15px"><span style="width: 28px; height: 0; border-top: 2px dashed #B42318"></span>Failure / recovery path</div>
+<div style="display: flex; gap: 10px; align-items: center; font-size: 15px"><span style="color: #A84F1F; font-weight: 700">↪</span>Jump to a screen elsewhere on the map</div>
+<div style="font-size: 14px; color: #454A54; line-height: 1.45">Blue text is the app route. Grey text is the API the screen calls. Guards: nothing past 02 is reachable without consent; product screens need onboarding complete.</div>
+</div>
+<div style="position: absolute; left: 40px; top: 900px; width: 520px; display: flex; flex-direction: column; gap: 10px; background: #FFFFFF; border: 1px solid #E1DDD3; border-radius: 16px; padding: 18px 20px">
+<div style="font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #5B606B">Rules every screen follows</div>
+<div style="font-size: 14.5px; line-height: 1.5">• Every figure says what it's based on (connected accounts, last sync).<br>• Stale, failed or missing accounts are named — never estimated.<br>• Debts are shown separately and never counted as cash.<br>• The agent never guesses a price or a figure; it asks or says so.<br>• Status is text + icon, never colour alone. Touch targets ≥ 44px.<br>• Consent is checked on the server for every read and every agent tool.</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2650,"height":1760}}'>
+class Component extends DCLogic {
+renderVals() {
+const W = 240, H = 110, X0 = 40, DX = 290, Y0 = 150, DY = 260;
+const G = {
+onb: { tint: '#E3EFE9', border: '#0F5C4C', ink: '#0B4A3D', label: 'Onboarding' },
+con: { tint: '#E5EBF5', border: '#2F4B7C', ink: '#1F365C', label: 'Connecting a bank' },
+err: { tint: '#FBE6E3', border: '#B42318', ink: '#7A1911', label: 'Failure & recovery' },
+prod: { tint: '#E2F1E8', border: '#1D6B45', ink: '#14502F', label: 'Everyday product' },
+set: { tint: '#EFECE5', border: '#8A8F99', ink: '#454A54', label: 'Settings & control' }
+};
+const raw = [
+['01', 'Introduction', 0, 0, 'onb', '/welcome', 'PATCH /onboarding'],
+['02', 'Data consent', 1, 0, 'onb', '/onboarding/consent', 'PUT /consent (9 categories, versioned)'],
+['03', 'Profile setup', 2, 0, 'onb', '/onboarding/profile', 'PUT /profile · skippable'],
+['04', 'Connect a bank', 2, 1, 'con', '/onboarding/connect · /accounts/add', 'GET /institutions'],
+['04a', 'Before you go', 3, 1, 'con', '/connect/before/:institutionId', 'POST /connections on Continue'],
+['04b', "Bank sign-in & approval", 4, 1, 'con', '/connect/authorise/:id (bank-hosted)', 'POST /connections/:id/authorise'],
+['04c', 'Accounts found', 5, 1, 'con', '/connect/:id/found', 'discovered accounts from authorise'],
+['05', 'Choose accounts', 6, 1, 'con', '/connect/:id/select', 'POST /connections/:id/accounts'],
+['05a', 'Syncing', 7, 1, 'con', '/connect/:id/sync', 'POST /connections/:id/sync'],
+['05b', 'Bank connected', 8, 1, 'con', '/connect/:id/done', 'GET /connections/:id/summary'],
+['E3', 'Reconfirm access', 3, 2, 'err', '/accounts/reconnect/:id', 'POST /connections/:id/reauthorise'],
+['E1', "Didn't complete", 4, 2, 'err', '/connect/failed?reason=', 'cancelled · timed_out · bank_unavailable'],
+['E2', 'Partly synced', 7, 2, 'err', '/connect/:id/done (partial)', 'summary.partial = true', '↪ Retry → 05a'],
+['06', 'Add another account', 8, 2, 'onb', '/onboarding/accounts', 'GET /connections', '↪ Add another → 04'],
+['07', 'First insight', 8, 3, 'onb', '/onboarding/insight', 'GET /insights · PATCH /onboarding done'],
+['08', 'Home', 7, 3, 'prod', '/home', 'GET /snapshot /insights /commitments /goals'],
+['A1', 'Ask BACI', 6, 3, 'prod', '/chat', 'POST /agent/conversations/:id/messages'],
+['A2', 'Asks for the price', 5, 4, 'prod', '/chat (clarify)', 'no tool call until price is known'],
+['10', 'Can I afford this?', 5, 3, 'prod', '/chat (affordability card)', 'tool: calculatePurchaseImpact'],
+['09', 'Accounts & states', 7, 4, 'prod', '/accounts', 'PATCH /accounts/:id · POST sync', '↪ Re-authenticate → E3 · Add → 04'],
+['S3', 'Disconnect bank', 6, 4, 'set', '/accounts (dialog)', 'DELETE /connections/:id'],
+['S1', 'Settings', 8, 4, 'set', '/settings', 'PUT /profile'],
+['S2', 'Data permissions', 8, 5, 'set', '/settings/permissions', 'PUT /consent · DELETE /consent'],
+['S4', 'Access revoked', 7, 5, 'set', '/home (revoked state)', 'API returns 403 consent_required', '↪ Review permissions → S2']
+];
+const pos = {};
+const nodes = raw.map(([id, title, c, r, g, route, api, jump]) => {
+const x = X0 + c * DX, y = Y0 + r * DY + (r === 0 ? 0 : 0);
+pos[id] = { x: x, y: y + (r === 0 ? 0 : 0) };
+const gg = G[g];
+return { id: id, title: title, x: x, y: y, route: route, api: api, tint: gg.tint, border: gg.border, ink: gg.ink, jump: jump || '', hasJump: Boolean(jump) };
+});
+const edges = [
+['01', '02', 'Get started'], ['02', '03', 'Agree'], ['03', '04', 'Continue / Skip'],
+['04', '04a', 'Pick provider'], ['04a', '04b', 'Continue'], ['04b', '04c', 'Approve'], ['04c', '05', 'Review'],
+['05', '05a', 'Use N accounts'], ['05a', '05b', 'Synced'], ['05b', '06', 'Done'], ['06', '07', 'Continue'],
+['07', '08', 'Explore'], ['08', 'A1', 'Ask BACI'], ['A1', '10', 'Purchase + price'], ['A1', 'A2', 'No price'],
+['A2', '10', 'Price given'], ['08', '09', 'Accounts'], ['09', 'S3', 'Disconnect'], ['08', 'S1', 'Settings'],
+['S1', 'S2', 'Permissions'], ['E3', '04b', 'Continue to bank'],
+['04b', 'E1', "Don't allow / expired / down", true], ['E1', '04a', 'Try again', true], ['05a', 'E2', 'Account fails', true],
+['S2', 'S4', 'Revoke all', true]
+];
+const centre = (id) => ({ x: pos[id].x + W / 2, y: pos[id].y + H / 2 });
+const edgePt = (c, dx, dy, pad) => {
+const t = Math.min((W / 2 + pad) / Math.max(Math.abs(dx), 0.001), (H / 2 + pad) / Math.max(Math.abs(dy), 0.001));
+return { x: c.x + dx * t, y: c.y + dy * t };
+};
+let linePath = '', dashPath = '', headPath = '', dashHeadPath = '';
+const labels = [];
+edges.forEach(([a, b, text, dashed]) => {
+const ca = centre(a), cb = centre(b);
+const dx = cb.x - ca.x, dy = cb.y - ca.y;
+const s = edgePt(ca, dx, dy, 4);
+const e = edgePt(cb, -dx, -dy, 6);
+const len = Math.hypot(e.x - s.x, e.y - s.y) || 1;
+const ux = (e.x - s.x) / len, uy = (e.y - s.y) / len;
+const bx = e.x - ux * 11, by = e.y - uy * 11;
+const seg = 'M' + s.x.toFixed(1) + ' ' + s.y.toFixed(1) + 'L' + bx.toFixed(1) + ' ' + by.toFixed(1);
+const head = 'M' + e.x.toFixed(1) + ' ' + e.y.toFixed(1) + 'L' + (bx - uy * 6).toFixed(1) + ' ' + (by + ux * 6).toFixed(1) + 'L' + (bx + uy * 6).toFixed(1) + ' ' + (by - ux * 6).toFixed(1) + 'Z';
+if (dashed) { dashPath += seg; dashHeadPath += head; } else { linePath += seg; headPath += head; }
+if (len > 70) labels.push({ x: Math.round((s.x + e.x) / 2), y: Math.round((s.y + e.y) / 2), text: text, colour: dashed ? '#B42318' : '#454A54' });
+});
+return {
+nodes: nodes,
+labels: labels,
+linePath: linePath,
+dashPath: dashPath,
+headPath: headPath,
+dashHeadPath: dashHeadPath,
+legend: Object.keys(G).map((k) => G[k])
+};
+}
+}
+</script>
+</body>
+</html>

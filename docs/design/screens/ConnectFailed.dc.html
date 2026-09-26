@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>BACI — Connection didn't complete</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&amp;family=Instrument+Sans:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0;font-family:'Instrument Sans',system-ui,sans-serif;color:#16181D;background:#F5F3EE}
+a{color:#0F5C4C}a:hover{color:#0B4A3D}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F5F3EE; padding: 16px 16px 20px; display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; gap: 6px; padding-top: 56px">
+<div style="flex-grow: 1; height: 4px; border-radius: 4px; background: #0F5C4C"></div>
+<div style="flex-grow: 1; height: 4px; border-radius: 4px; background: #0F5C4C"></div>
+<div style="flex-grow: 1; height: 4px; border-radius: 4px; background: #0F5C4C"></div>
+<div style="flex-grow: 1; height: 4px; border-radius: 4px; background: #0F5C4C"></div>
+<div style="flex-grow: 1; height: 4px; border-radius: 4px; background: #E1DDD3"></div>
+</div>
+<div style="display: flex; justify-content: center; padding-top: 12px">
+<div style="width: 96px; height: 96px; border-radius: 50%; background: {{iconBg}}; color: {{iconFg}}; display: flex; align-items: center; justify-content: center"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 15l-2 2a3 3 0 01-4-4l2-2"/><path d="M15 9l2-2a3 3 0 014 4l-2 2"/><path d="M4 4l16 16"/></svg></div>
+</div>
+<div role="alert" style="display: flex; flex-direction: column; gap: 8px; text-align: center">
+<h1 style="margin: 0; font-family: Fraunces, Georgia, serif; font-weight: 600; font-size: 26px; line-height: 1.2">{{title}}</h1>
+<p style="margin: 0; color: #5B606B; font-size: 15px; line-height: 1.45">{{body}}</p>
+</div>
+<div style="background: #FFFFFF; border: 1px solid #E1DDD3; border-radius: 16px; padding: 14px 16px; display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 8px 12px; font-size: 14px">
+<div style="color: #5B606B">Provider</div><div>Harbour Bank</div>
+<div style="color: #5B606B">What happened</div><div>{{what}}</div>
+<div style="color: #5B606B">Your data</div><div>Nothing was shared with BACI.</div>
+</div>
+<div style="flex-grow: 1"></div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<a href="ConnectHandoff.dc.html" style="height: 52px; border-radius: 999px; background: #0F5C4C; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center">{{retryLabel}}</a>
+<a href="Connect.dc.html" style="height: 52px; box-sizing: border-box; border-radius: 999px; border: 1px solid #C9C4B8; background: #FFFFFF; color: #16181D; text-decoration: none; font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center">Choose a different provider</a>
+<a href="AddAnother.dc.html" style="height: 44px; display: flex; align-items: center; justify-content: center; font-weight: 600; text-decoration: none">Skip for now</a>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"reason":{"editor":"enum","options":["cancelled","timed_out","bank_unavailable"],"default":"cancelled"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+const r = this.props.reason ?? 'cancelled';
+const copy = {
+cancelled: {
+title: "Harbour Bank wasn't connected",
+body: 'You chose not to share access at Harbour Bank, so nothing was connected. You can try again whenever you like.',
+what: 'Access not approved at the bank',
+retry: 'Try again',
+bg: '#EFECE5', fg: '#454A54'
+},
+timed_out: {
+title: 'The link to Harbour Bank expired',
+body: "For your security, approval links only last 15 minutes. Start again and it'll only take a moment.",
+what: 'Approval not completed in time',
+retry: 'Start again',
+bg: '#FBEFD9', fg: '#8A5100'
+},
+bank_unavailable: {
+title: "Harbour Bank isn't responding",
+body: "This is on the bank's side, not yours. Try again in a few minutes, or connect a different account for now.",
+what: 'Bank service unavailable',
+retry: 'Retry',
+bg: '#FBE6E3', fg: '#B42318'
+}
+}[r] || {};
+return { title: copy.title, body: copy.body, what: copy.what, retryLabel: copy.retry, iconBg: copy.bg, iconFg: copy.fg };
+}
+}
+</script>
+</body>
+</html>
