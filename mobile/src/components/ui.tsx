@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import {
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   StyleProp,
@@ -374,16 +375,24 @@ export function ErrorBanner({ error, onRetry }: { error: Error | null | undefine
 
 /** Modal confirmation (S3 Disconnect and friends). */
 export function Dialog({ visible, title, children, onRequestClose }: { visible: boolean; title: string; children: ReactNode; onRequestClose: () => void }) {
+  const sheet = (
+    <View style={{ flex: 1, backgroundColor: 'rgba(22,24,29,0.45)', justifyContent: 'center', padding: 16 }}>
+      <View accessibilityViewIsModal aria-modal accessibilityLabel={title} role="dialog" style={{ backgroundColor: colors.surface, borderRadius: 24, padding: 24, gap: 14 }}>
+        <Display accessibilityRole="header" style={{ fontSize: 24, lineHeight: 29 }}>
+          {title}
+        </Display>
+        {children}
+      </View>
+    </View>
+  );
+  // On web a Modal portals to <body>, outside the phone frame; a fixed overlay stays on the phone screen.
+  if (Platform.OS === 'web') {
+    if (!visible) return null;
+    return <View style={{ position: 'fixed' as 'absolute', top: 0, right: 0, bottom: 0, left: 0, zIndex: 1000 }}>{sheet}</View>;
+  }
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onRequestClose}>
-      <View style={{ flex: 1, backgroundColor: 'rgba(22,24,29,0.45)', justifyContent: 'center', padding: 16 }}>
-        <View accessibilityViewIsModal accessibilityLabel={title} style={{ backgroundColor: colors.surface, borderRadius: 24, padding: 24, gap: 14 }}>
-          <Display accessibilityRole="header" style={{ fontSize: 24, lineHeight: 29 }}>
-            {title}
-          </Display>
-          {children}
-        </View>
-      </View>
+      {sheet}
     </Modal>
   );
 }
