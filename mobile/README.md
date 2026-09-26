@@ -51,7 +51,22 @@ EXPO_PUBLIC_BACI_TOKEN_URL=http://<your-computer-LAN-IP>:8787
 
 The server exposes `/conversation-token` for voice over WebRTC and `/signed-url` for text over WebSocket.
 
-### 2. Configure the agent in the ElevenLabs dashboard
+### 2. Turn on the agent capabilities the app uses
+
+`npm run configure-agent` does this through the ElevenLabs API. It's safe to re-run, and nothing is duplicated. It:
+- creates the four client tools below and attaches them to the agent, keeping any tools it already has;
+- allows the *Text only* override;
+- adds the app's hosts (`erastus-o.github.io`, `localhost`) to the agent's website allowlist, but only if an allowlist is in use;
+- with `--prompt`, appends the rules below to the agent's prompt, once.
+
+```bash
+ELEVENLABS_API_KEY=sk_... npm run configure-agent -- --dry-run   # show what would change
+ELEVENLABS_API_KEY=sk_... npm run configure-agent -- --prompt    # apply
+```
+
+The deploy workflow runs it for you when the repository has an `ELEVENLABS_API_KEY` secret (see **Deploy** below).
+
+To do it by hand instead, in the ElevenLabs dashboard:
 
 **Security → Overrides:** allow *Text only* (`conversation.text_only`) so typed chats can use the agent. Voice works without it.
 
@@ -69,6 +84,15 @@ The server exposes `/conversation-token` for voice over WebRTC and `/signed-url`
 > You are BACI, a UK personal finance information agent. Only use figures from BACI tools or BACI context updates. Never estimate or invent numbers. If a purchase has no price, ask "How much does the {item} cost?" and make no tool call until you have it. For finance, ask for the number of months and the APR. If the user doesn't know the APR, use 0% and say clearly that the real cost will be higher. If a tool says data couldn't be retrieved, say: "I couldn't retrieve your live financial data just now, so I won't guess at the numbers," and offer to try again. If a tool says permission is missing, say so and point to Settings › Data permissions. Debts are never cash. Give options, not advice: BACI provides information, not regulated financial advice.
 
 With the agent off, *Ask BACI* still works on-device (`src/agent/orchestrator.ts`). It answers balance, bills and affordability questions, and it asks for a missing price or finance term instead of guessing. Open-ended questions need the agent.
+
+## Deploy
+
+`.github/workflows/deploy-web.yml` publishes the web app to **https://erastus-o.github.io/BACI/** on every push to `main`, with the ElevenLabs agent on. You can also run it from the repo's **Actions** tab.
+- **Build and publish:** it typechecks, builds with `EXPO_BASE_URL=/BACI`, and pushes the site to the `gh-pages` branch. GitHub Pages serves it from there. If Pages isn't on yet, set **Settings → Pages → Source** to *Deploy from a branch*, then choose `gh-pages` and `/ (root)`.
+- **Agent setup:** add a repository secret `ELEVENLABS_API_KEY` (Settings → Secrets and variables → Actions) and the same run also turns on the agent capabilities. Without the secret, that job is skipped.
+- **Another agent:** to point the site at a different agent, set a repository *variable* `ELEVENLABS_AGENT_ID`.
+
+In the deployed web app, voice works through the browser's microphone over HTTPS. Phones need a native build (see **Run it**).
 
 ## How it maps to the spec
 

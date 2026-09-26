@@ -1,0 +1,95 @@
+name: Deploy web app
+
+# Builds the Expo web app with the BACI ElevenLabs agent turned on and publishes it
+# to GitHub Pages: https://erastus-o.github.io/BACI/
+#
+# If the ELEVENLABS_API_KEY repository secret is set, it also turns on what the app needs
+# from the agent (client tools, "Text only" override, website allowlist, BACI's rules);
+# see mobile/scripts/configure-agent.mjs. Without the secret that job is skipped.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write # push the built site to the gh-pages branch
+
+concurrency:
+  group: deploy-web
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Build web app
+        run: npx expo export --platform web --clear --output-dir dist
+        env:
+          # Served from /<repo>/ on GitHub Pages.
+          EXPO_BASE_URL: /${{ github.event.repository.name }}
+          # The agent is on by default; set a repository variable to point at another agent.
+          EXPO_PUBLIC_ELEVENLABS_AGENT_ID: ${{ vars.ELEVENLABS_AGENT_ID }}
+
+      - name: Single-page app fallback
+        # GitHub Pages serves 404.html for unknown paths, so deep links still load the app.
+        run: cp dist/index.html dist/404.html
+
+      - uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: mobile/dist
+          force_orphan: true
+
+  configure-agent:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+    env:
+      ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+      ELEVENLABS_AGENT_ID: ${{ vars.ELEVENLABS_AGENT_ID }}
+      BACI_APP_HOSTS: ${{ github.repository_owner }}.github.io,localhost
+    steps:
+      - name: Check for the ElevenLabs API key
+        id: key
+        working-directory: . # runs before checkout
+        run: |
+          if [ -z "$ELEVENLABS_API_KEY" ]; then
+            echo "::notice::ELEVENLABS_API_KEY secret not set; skipping agent setup."
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.key.outputs.present == 'true'
+
+      - uses: actions/setup-node@v4
+        if: steps.key.outputs.present == 'true'
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+
+      - if: steps.key.outputs.present == 'true'
+        run: npm ci
+
+      - name: Turn on the agent capabilities the app uses
+        if: steps.key.outputs.present == 'true'
+        run: npm run configure-agent -- --prompt
