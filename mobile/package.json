@@ -29,6 +29,7 @@
     "react-native-web": "~0.21.0"
   },
   "devDependencies": {
+    "@elevenlabs/elevenlabs-js": "^2.69.0",
     "@types/react": "~19.2.2",
     "typescript": "~6.0.3"
   },
@@ -38,7 +39,8 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
-    "token-server": "node server/token-server.mjs"
+    "token-server": "node server/token-server.mjs",
+    "configure-agent": "node scripts/configure-agent.mjs"
   },
   "private": true
 }
