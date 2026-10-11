@@ -94,18 +94,19 @@ With the agent off, *Ask BACI* still works on-device (`src/agent/orchestrator.ts
 
 In the deployed web app, voice works through the browser's microphone over HTTPS. Phones need a native build (see **Run it**).
 
-## Real banks (GoCardless)
+## Real banks (Plaid)
 
-The bank picker can list real banks with their logos from [GoCardless Bank Account Data](https://bankaccountdata.gocardless.com) (formerly Nordigen).
+The bank picker can list real banks from [Plaid](https://plaid.com)'s institution directory, with their logos and brand colours.
 - **Set up:**
-  1. Create a free GoCardless Bank Account Data account.
-  2. Under **Developers → User secrets**, create a secret ID and key.
-  3. Add them as repository secrets `GOCARDLESS_SECRET_ID` and `GOCARDLESS_SECRET_KEY`.
+  1. Sign up at https://dashboard.plaid.com/signup. The free sandbox is enough.
+  2. Under **Developers → Keys**, copy your `client_id` and **Sandbox** secret.
+  3. Add them as repository secrets `PLAID_CLIENT_ID` and `PLAID_SECRET`.
   4. On the next deploy, `scripts/fetch-banks.mjs` writes the list to `src/data/banks.generated.json`.
-- **Country:** the default is GB. Set a repository variable `BANKS_COUNTRY` (for example `ie` or `de`) for another country.
-- **Locally:** run `GOCARDLESS_SECRET_ID=… GOCARDLESS_SECRET_KEY=… npm run banks [country]`.
-- **Secret safety:** the secret is only used at build time and never ships in the app.
-- **What's real:** bank names, BICs and logos. Signing in and approving is still simulated: approving a real bank shows sample accounts. Linking real accounts needs a server that holds the GoCardless secret and creates requisitions, which GitHub Pages can't host.
+- **Country:** the default is GB. Set a repository variable `BANKS_COUNTRY` (for example `IE`, `FR` or `US`) for another country.
+- **Production keys:** to use a Production secret, set `PLAID_ENV=production`.
+- **Locally:** run `PLAID_CLIENT_ID=… PLAID_SECRET=… npm run banks [country]`.
+- **Secret safety:** the secret is only used at build time and never ships in the app. Logos are bundled as images, so they also work offline.
+- **What's real:** bank names, logos and brand colours. Signing in and approving is still simulated: approving a real bank shows sample accounts. Linking real accounts needs a server that holds the Plaid secret and runs Plaid Link, which GitHub Pages can't host.
 - **Without the secrets:** the picker shows the fictional sandbox banks from the design (Meridian, Harbour…). Sample data always uses those.
 
 ## The orb

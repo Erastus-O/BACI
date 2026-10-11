@@ -18,7 +18,7 @@ export function InstitutionPicker({ flow }: { flow: Flow }) {
   const conns = useQuery(getConnections);
   const [query, setQuery] = useState('');
   const q = query.trim().toLowerCase();
-  const matches = (insts.data ?? []).filter((b) => !q || b.name.toLowerCase().includes(q) || b.bic?.toLowerCase().startsWith(q));
+  const matches = (insts.data ?? []).filter((b) => !q || b.name.toLowerCase().includes(q));
   const list = q ? matches : matches.slice(0, FIRST);
   const more = matches.length - list.length;
   const existing = (conns.data ?? []).filter((c) => c.status !== 'awaiting_authorisation');
@@ -87,9 +87,9 @@ export function InstitutionPicker({ flow }: { flow: Flow }) {
           ) : null}
         </Card>
       ) : null}
-      {bankDirectory.source === 'gocardless' ? (
+      {bankDirectory.source === 'plaid' ? (
         <Muted style={{ fontSize: 12, textAlign: 'center' }}>
-          {(insts.data ?? []).length} {bankDirectory.country} banks and logos from GoCardless Bank Account Data · updated {bankDirectory.fetchedAt}. Connecting is simulated in this prototype.
+          {(insts.data ?? []).length} {bankDirectory.country} banks and logos from Plaid · updated {bankDirectory.fetchedAt}. Connecting is simulated in this prototype.
         </Muted>
       ) : null}
       <Banner tone="info">You can add more banks, cards and savings accounts next — BACI works best with all of them.</Banner>

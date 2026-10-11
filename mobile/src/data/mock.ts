@@ -7,10 +7,9 @@ export type Institution = {
   /** The bank's own colour, used on its (simulated) sign-in page — never BACI's. */
   brandColour: string;
   types: string;
-  /** Logo URL (real banks from GoCardless). */
+  /** Logo (data URI or URL) for real banks from Plaid. */
   logo?: string;
-  bic?: string;
-  /** A real bank from the GoCardless directory, rather than a sandbox bank. */
+  /** A real bank from Plaid's directory, rather than a sandbox bank. */
   real?: boolean;
 };
 
