@@ -41,7 +41,7 @@ export default function Consent() {
           <StepBar step={2} label="Data consent" />
         </View>
       </Row>
-      <PageHeader title="What do you want me to access?" subtitle="Choose what BACI can analyse" />
+      <PageHeader title="What do you want me to access?" subtitle="Choose what BACI can analyse, this would help BACI provide more context" />
       <Row style={{ justifyContent: 'space-between' }}>
         <Muted style={{ fontSize: 14 }}>
           {count} of {consentCategories.length} allowed
