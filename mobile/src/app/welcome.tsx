@@ -49,9 +49,8 @@ export default function Intro() {
       }
     >
       <StepBar step={1} label="Welcome" />
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <Orb size={orbSize} accessibilityLabel="BACI. Drag to spin, tap to wake." />
-        <Text style={{ fontFamily: fonts.medium, fontSize: 12.5, color: colors.muted, letterSpacing: 0.3 }}>Drag to spin · tap to wake</Text>
       </View>
     </Screen>
   );
