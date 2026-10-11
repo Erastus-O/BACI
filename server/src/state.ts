@@ -59,7 +59,10 @@ export async function buildState(db: Db, userId: string, now = new Date(), featu
   const accountName = (id: string) => {
     const a = accounts.find((x) => x.id === id);
     const item = items.find((i) => i.id === a?.item_id);
-    return a ? `${item?.institution_name ?? ''} ${a.name}`.trim() : 'an account';
+    if (!a) return 'an account';
+    const bank = item?.institution_name ?? '';
+    // "Monzo Current Account" already names the bank; don't make it "Monzo Monzo Current Account".
+    return a.name.toLowerCase().startsWith(bank.toLowerCase()) ? a.name : `${bank} ${a.name}`.trim();
   };
 
   const connections = items.map((i) => {
