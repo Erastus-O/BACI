@@ -1,6 +1,5 @@
 /**
- * Sandbox / dev-only controls (spec: 04b "Sandbox outcomes", 09 "Simulate").
- * On by default in this prototype because all banks are sandbox data.
- * Set EXPO_PUBLIC_SANDBOX=0 to hide them, e.g. for a stakeholder demo build.
+ * Sandbox / dev-only controls (spec: 04b "Sandbox outcomes", 09 "Simulate", Settings prototype controls).
+ * Hidden unless a build sets EXPO_PUBLIC_SANDBOX=1 (the e2e journey does, to exercise failure states).
  */
-export const sandboxEnabled = process.env.EXPO_PUBLIC_SANDBOX !== '0';
+export const sandboxEnabled = process.env.EXPO_PUBLIC_SANDBOX === '1';

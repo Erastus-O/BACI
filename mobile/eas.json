@@ -8,11 +8,11 @@
     },
     "preview": {
       "distribution": "internal",
-      "env": { "EXPO_PUBLIC_API_URL": "https://baci-api.onrender.com", "EXPO_PUBLIC_SANDBOX": "0" }
+      "env": { "EXPO_PUBLIC_API_URL": "https://baci-api.onrender.com" }
     },
     "production": {
       "autoIncrement": true,
-      "env": { "EXPO_PUBLIC_API_URL": "https://baci-api.onrender.com", "EXPO_PUBLIC_SANDBOX": "0" }
+      "env": { "EXPO_PUBLIC_API_URL": "https://baci-api.onrender.com" }
     }
   },
   "submit": { "production": {} }
