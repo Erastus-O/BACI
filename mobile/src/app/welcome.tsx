@@ -22,7 +22,7 @@ export default function Intro() {
             Hello, I'm BACI
           </Text>
           <Muted style={{ fontSize: 15.5, lineHeight: 22 }}>
-            Your financial intelligence agent. With your permission, I'll look at your spending and savings together and answer your questions.
+            Your financial intelligence agent. With your permission, I'll look at your spending and savings together, and keep you aware of your status.
           </Muted>
           <ErrorBanner error={start.error ?? demo.error} />
           <Button
