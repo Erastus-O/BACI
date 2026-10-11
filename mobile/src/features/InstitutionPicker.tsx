@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Pressable, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
-import { Banner, BackButton, BankMark, Body, Button, Card, Divider, ErrorBanner, Eyebrow, H1, Loading, Muted, Row, Screen, Stack, StepBar, Strong } from '../components/ui';
+import { BackButton, BankMark, Body, Button, Card, Divider, ErrorBanner, Eyebrow, H1, Loading, Muted, Row, Screen, Stack, StepBar, Strong } from '../components/ui';
 import { Icon } from '../components/Icon';
 import { getConnections, getInstitutions, peek } from '../services/api';
 import { useMutation } from '../services/useQuery';
@@ -160,7 +160,6 @@ function SandboxPicker({ flow }: { flow: Flow }) {
           {(insts.data ?? []).length} {bankDirectory.country} banks and logos from Plaid · updated {bankDirectory.fetchedAt}. Connecting is simulated in this prototype.
         </Muted>
       ) : null}
-      <Banner tone="info">You can add more banks, cards and savings accounts next — BACI works best with all of them.</Banner>
     </Screen>
   );
 }
