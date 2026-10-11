@@ -8,7 +8,7 @@ import { Icon, IconName } from '../../components/Icon';
 import { AffordabilityCard, QuickReply } from '../../components/AffordabilityCard';
 import { ChatItem, useAgentChat } from '../../agent/AgentChat';
 import { money } from '../../lib/format';
-import { colors, fonts } from '../../theme';
+import { colors, fonts, glass } from '../../theme';
 
 // A1 Ask BACI — /chat (A2 clarify turns and 10 affordability cards render in the log)
 export default function Chat() {
@@ -96,7 +96,7 @@ export default function Chat() {
           ) : null}
         </ScrollView>
 
-        <View style={{ paddingVertical: 12, paddingHorizontal: 16, flexDirection: 'row', gap: 8, alignItems: 'flex-end', borderTopWidth: 1, borderTopColor: 'rgba(22,24,29,0.06)', backgroundColor: 'rgba(255,255,255,0.55)' }}>
+        <View style={{ paddingVertical: 12, paddingHorizontal: 16, flexDirection: 'row', gap: 8, alignItems: 'flex-end', ...glass, borderWidth: 0, borderTopWidth: 1, borderTopColor: colors.glassEdge, backgroundColor: 'rgba(255,255,255,0.55)' }}>
           <TextInput
             accessibilityLabel="Message BACI"
             value={draft}

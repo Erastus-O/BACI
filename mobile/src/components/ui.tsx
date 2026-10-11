@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { colors, fonts, radius } from '../theme';
+import { colors, fonts, glass, radius } from '../theme';
 import { Icon, IconName } from './Icon';
 import { OrbImage } from './orb/OrbImage';
 
@@ -185,7 +185,7 @@ export function Button({
 
 const buttonVariants: Record<ButtonVariant, { bg: string; pressed: string; fg: string; border?: string }> = {
   primary: { bg: colors.primary, pressed: colors.primaryPressed, fg: '#FFFFFF' },
-  secondary: { bg: colors.surface, pressed: colors.hairline, fg: colors.ink, border: colors.control },
+  secondary: { bg: colors.surface, pressed: colors.sheet, fg: colors.ink, border: colors.glassEdge },
   ghost: { bg: 'transparent', pressed: colors.hairline, fg: colors.primary },
   danger: { bg: 'transparent', pressed: colors.dangerBg, fg: colors.dangerFg },
 };
@@ -366,7 +366,7 @@ export const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: 'transparent' },
   screenBody: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 20, gap: 16 },
   footer: { paddingHorizontal: 16, paddingBottom: 12, paddingTop: 8, gap: 8, backgroundColor: 'transparent' },
-  card: { backgroundColor: colors.surface, borderWidth: 1, borderColor: 'rgba(22,24,29,0.04)', borderRadius: radius.lg, padding: 16, shadowColor: '#1E3A2B', shadowOpacity: 0.06, shadowRadius: 18, shadowOffset: { width: 0, height: 6 }, elevation: 1 },
+  card: { ...glass, borderRadius: 22, padding: 16, shadowColor: '#1E3A2B', shadowOpacity: 0.08, shadowRadius: 24, shadowOffset: { width: 0, height: 8 } },
   h1: { fontFamily: fonts.display, fontSize: 28, lineHeight: 32, color: colors.ink },
   display: { fontFamily: fonts.display, color: colors.ink },
   body: { fontFamily: fonts.body, fontSize: 15, lineHeight: 21, color: colors.ink },
@@ -377,14 +377,14 @@ export const styles = StyleSheet.create({
   buttonLg: { height: 52 },
   buttonMd: { height: 44 },
   buttonLabel: { fontFamily: fonts.semibold },
-  back: { width: 44, height: 44, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' },
-  chip: { minHeight: 44, paddingHorizontal: 18, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.chipLine, backgroundColor: colors.surface, flexDirection: 'row', alignItems: 'center', gap: 6 },
+  back: { ...glass, width: 44, height: 44, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center' },
+  chip: { ...glass, minHeight: 44, paddingHorizontal: 18, borderRadius: radius.pill, borderColor: 'rgba(22,24,29,0.16)', flexDirection: 'row', alignItems: 'center', gap: 6 },
   segmented: { flexDirection: 'row', gap: 4, backgroundColor: colors.hairline, borderRadius: 12, padding: 4 },
   segment: { flex: 1, height: 38, borderRadius: 9, alignItems: 'center', justifyContent: 'center' },
   segmentOn: { backgroundColor: colors.surface, shadowColor: colors.ink, shadowOpacity: 0.08, shadowRadius: 2, shadowOffset: { width: 0, height: 1 }, elevation: 1 },
   checkbox: { width: 22, height: 22, borderRadius: 6, borderWidth: 1.5, borderColor: colors.control, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' },
   badge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 3, paddingLeft: 7, paddingRight: 9, borderRadius: radius.pill, alignSelf: 'flex-start' },
-  banner: { flexDirection: 'row', gap: 10, alignItems: 'flex-start', paddingVertical: 12, paddingHorizontal: 14, borderRadius: radius.sm },
+  banner: { flexDirection: 'row', gap: 10, alignItems: 'flex-start', paddingVertical: 12, paddingHorizontal: 14, borderRadius: 14, borderWidth: 1, borderColor: 'rgba(255,255,255,0.6)' },
 });
 
 // ---------- States ----------
@@ -425,8 +425,8 @@ export function ErrorBanner({ error, onRetry }: { error: Error | null | undefine
 /** Modal confirmation (S3 Disconnect and friends). */
 export function Dialog({ visible, title, children, onRequestClose }: { visible: boolean; title: string; children: ReactNode; onRequestClose: () => void }) {
   const sheet = (
-    <View style={{ flex: 1, backgroundColor: 'rgba(22,24,29,0.45)', justifyContent: 'center', padding: 16 }}>
-      <View accessibilityViewIsModal aria-modal accessibilityLabel={title} role="dialog" style={{ backgroundColor: colors.surface, borderRadius: 24, padding: 24, gap: 14 }}>
+    <View style={{ flex: 1, backgroundColor: 'rgba(22,40,30,0.32)', justifyContent: 'center', padding: 16 }}>
+      <View accessibilityViewIsModal aria-modal accessibilityLabel={title} role="dialog" style={{ ...glass, backgroundColor: colors.sheet, borderRadius: 28, padding: 24, gap: 14 }}>
         <Display accessibilityRole="header" style={{ fontSize: 24, lineHeight: 29 }}>
           {title}
         </Display>

@@ -5,7 +5,7 @@ import { Icon, IconName } from '../../components/Icon';
 import { stepRoute } from '../../features/flow';
 import { peek } from '../../services/api';
 import { useServerVersion } from '../../services/useQuery';
-import { colors, fonts } from '../../theme';
+import { colors, fonts, glass } from '../../theme';
 
 const icon =
   (name: IconName) =>
@@ -25,7 +25,7 @@ export default function TabsLayout() {
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.muted,
         // Explicit height and line height so labels aren't clipped (with the home-indicator inset).
-        tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border, height: 58 + insets.bottom, paddingTop: 6 },
+        tabBarStyle: { ...glass, backgroundColor: 'rgba(255,255,255,0.72)', borderWidth: 0, borderTopWidth: 1, borderTopColor: colors.glassEdge, height: 58 + insets.bottom, paddingTop: 6 },
         tabBarLabelStyle: { fontFamily: fonts.semibold, fontSize: 12, lineHeight: 16 },
         sceneStyle: { backgroundColor: colors.ground },
       }}

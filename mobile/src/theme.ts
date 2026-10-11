@@ -1,8 +1,15 @@
-// Tokens taken from the BACI design canvas (Claude Design).
+import { Platform, ViewStyle } from 'react-native';
+
+// Tokens taken from the BACI design canvas (Claude Design), with frosted-glass surfaces.
 export const colors = {
   // Fallback behind the gradient backdrop (assets/backdrop.jpg).
   ground: '#E9EFE6',
-  surface: '#FFFFFF',
+  /** Frosted glass: translucent white over the green gradient. */
+  surface: 'rgba(255,255,255,0.58)',
+  /** Brighter glass for dialogs and bars over moving content. */
+  sheet: 'rgba(255,255,255,0.86)',
+  /** The bright edge that makes glass read as glass. */
+  glassEdge: 'rgba(255,255,255,0.78)',
   ink: '#16181D',
   inkSoft: '#454A54',
   muted: '#5B606B',
@@ -32,6 +39,14 @@ export const colors = {
   infoFg: '#2F4B7C',
   infoInk: '#1F365C',
   accent: '#A84F1F',
+};
+
+/** Frosted glass: translucent fill, bright hairline edge, and a real backdrop blur on web. */
+export const glass: ViewStyle = {
+  backgroundColor: colors.surface,
+  borderWidth: 1,
+  borderColor: colors.glassEdge,
+  ...(Platform.OS === 'web' ? ({ backdropFilter: 'blur(22px) saturate(160%)', WebkitBackdropFilter: 'blur(22px) saturate(160%)' } as object) : null),
 };
 
 export const fonts = {
