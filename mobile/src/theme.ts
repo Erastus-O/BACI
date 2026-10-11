@@ -1,66 +1,110 @@
-import { Platform, ViewStyle } from 'react-native';
+import { Platform, TextStyle, ViewStyle } from 'react-native';
 
-// Tokens taken from the BACI design canvas (Claude Design), with frosted-glass surfaces.
+// BACI design system: dark navy glass.
+// Screens sit on a deep navy gradient (assets/backdrop.jpg, see Backdrop in components/ui.tsx).
+// Content lives on frosted, translucent glass; the main action is a white pill; blue is the accent.
+// Change the look here, not in screens.
+
 export const colors = {
-  // Fallback behind the gradient backdrop (assets/backdrop.jpg).
-  ground: '#E9EFE6',
-  /** Frosted glass: translucent white over the green gradient. */
-  surface: 'rgba(255,255,255,0.58)',
-  /** Brighter glass for dialogs and bars over moving content. */
-  sheet: 'rgba(255,255,255,0.86)',
-  /** The bright edge that makes glass read as glass. */
-  glassEdge: 'rgba(255,255,255,0.78)',
-  ink: '#16181D',
-  inkSoft: '#454A54',
-  muted: '#5B606B',
-  primary: '#0F5C4C',
-  primaryPressed: '#0B4A3D',
-  primaryTint: '#E3EFE9',
-  ringOuter: '#B9CFC7',
-  ringInner: '#8FB3A7',
-  border: '#E1DDD3',
-  hairline: '#EFECE5',
-  control: '#C9C4B8',
-  chipLine: '#8E8A82',
-  toggleOff: '#9A968B',
-  stepIdle: '#E4E1D8',
-  track: '#EFECE5',
-  disabled: '#D7D3CA',
+  // ----- Ground -----
+  /** Fallback behind the gradient backdrop. */
+  ground: '#05060F',
 
-  successBg: '#E2F1E8',
-  successFg: '#1D6B45',
-  warnBg: '#FBEFD9',
-  warnFg: '#8A5100',
-  warnInk: '#5E3700',
-  dangerBg: '#FBE6E3',
-  dangerFg: '#B42318',
-  dangerInk: '#7A1911',
-  infoBg: '#E5EBF5',
-  infoFg: '#2F4B7C',
-  infoInk: '#1F365C',
-  accent: '#A84F1F',
+  // ----- Glass -----
+  /** Frosted glass card fill. */
+  surface: 'rgba(255,255,255,0.07)',
+  /** Raised glass: pressed states, segmented "on", secondary buttons. */
+  surfaceRaised: 'rgba(255,255,255,0.12)',
+  /** Opaque sheet for dialogs and bars over moving content. */
+  sheet: '#12162E',
+  /** Translucent navy for the tab bar and chat composer. */
+  bar: 'rgba(8,10,26,0.78)',
+  /** The light edge that makes glass read as glass. */
+  glassEdge: 'rgba(255,255,255,0.12)',
+
+  // ----- Text -----
+  ink: '#FFFFFF',
+  inkSoft: 'rgba(255,255,255,0.82)',
+  muted: 'rgba(226,232,255,0.62)',
+
+  // ----- Actions -----
+  /** Main call to action: a white pill with dark text. */
+  cta: '#FFFFFF',
+  ctaPressed: 'rgba(255,255,255,0.82)',
+  onCta: '#090B18',
+  /** Accent blue: links, progress, checkboxes, toggles, the user's chat bubbles. */
+  primary: '#4F86FF',
+  primaryPressed: '#3B70E6',
+  primaryTint: 'rgba(79,134,255,0.18)',
+
+  // ----- Lines and controls -----
+  ringOuter: 'rgba(255,255,255,0.18)',
+  ringInner: 'rgba(255,255,255,0.28)',
+  border: 'rgba(255,255,255,0.12)',
+  hairline: 'rgba(255,255,255,0.08)',
+  control: 'rgba(255,255,255,0.18)',
+  chipLine: 'rgba(255,255,255,0.22)',
+  toggleOff: 'rgba(255,255,255,0.22)',
+  stepIdle: 'rgba(255,255,255,0.16)',
+  track: 'rgba(255,255,255,0.10)',
+  disabled: 'rgba(255,255,255,0.14)',
+
+  // ----- Status (tinted glass backgrounds, light text) -----
+  successBg: 'rgba(64,214,138,0.15)',
+  successFg: '#63E3A0',
+  warnBg: 'rgba(255,186,82,0.15)',
+  warnFg: '#FFC46B',
+  warnInk: '#FFE1B3',
+  dangerBg: 'rgba(255,99,88,0.16)',
+  dangerFg: '#FF6B5F',
+  dangerInk: '#FFCAC4',
+  infoBg: 'rgba(79,134,255,0.17)',
+  infoFg: '#93B6FF',
+  infoInk: '#D6E3FF',
+  accent: '#FFB38A',
 };
 
-/** Frosted glass: translucent fill, bright hairline edge, and a real backdrop blur on web. */
-export const glass: ViewStyle = {
-  backgroundColor: colors.surface,
-  borderWidth: 1,
-  borderColor: colors.glassEdge,
-  ...(Platform.OS === 'web' ? ({ backdropFilter: 'blur(22px) saturate(160%)', WebkitBackdropFilter: 'blur(22px) saturate(160%)' } as object) : null),
-};
+const blur = (px: number): ViewStyle =>
+  Platform.OS === 'web' ? ({ backdropFilter: `blur(${px}px) saturate(150%)`, WebkitBackdropFilter: `blur(${px}px) saturate(150%)` } as ViewStyle) : {};
+
+/** Frosted glass: translucent fill, light edge, and a real backdrop blur on web. */
+export const glass: ViewStyle = { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.glassEdge, ...blur(24) };
+
+/** Glass for bars (tab bar, chat composer): darker so content scrolling under stays readable. */
+export const glassBar: ViewStyle = { backgroundColor: colors.bar, ...blur(20) };
 
 export const fonts = {
-  display: 'Fraunces_600SemiBold',
-  displayBold: 'Fraunces_700Bold',
+  display: 'InstrumentSans_700Bold',
+  displayBold: 'InstrumentSans_700Bold',
   body: 'InstrumentSans_400Regular',
   medium: 'InstrumentSans_500Medium',
   semibold: 'InstrumentSans_600SemiBold',
   bold: 'InstrumentSans_700Bold',
 };
 
+/** Type scale: bold, tight headings and plain, airy body copy. */
+export const type = {
+  hero: { fontFamily: fonts.display, fontSize: 40, lineHeight: 44, letterSpacing: -1 },
+  h1: { fontFamily: fonts.display, fontSize: 30, lineHeight: 35, letterSpacing: -0.6 },
+  h2: { fontFamily: fonts.display, fontSize: 22, lineHeight: 27, letterSpacing: -0.3 },
+  body: { fontFamily: fonts.body, fontSize: 15, lineHeight: 21 },
+  small: { fontFamily: fonts.body, fontSize: 13, lineHeight: 18 },
+  label: { fontFamily: fonts.semibold, fontSize: 15 },
+  eyebrow: { fontFamily: fonts.semibold, fontSize: 12.5, letterSpacing: 0.75, textTransform: 'uppercase' },
+} satisfies Record<string, TextStyle>;
+
 export const radius = {
   sm: 10,
+  md: 14,
+  lg: 20,
+  sheet: 28,
+  pill: 999,
+};
+
+export const space = {
+  xs: 4,
+  sm: 8,
   md: 12,
   lg: 16,
-  pill: 999,
+  xl: 24,
 };

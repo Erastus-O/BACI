@@ -135,7 +135,7 @@ export default function Home() {
         <Orb size={40} state={orbState} level={orbLevel} interactive={false} />
         <View style={{ flex: 1 }}>
           <Text style={{ fontFamily: fonts.bold, fontSize: 15, color: '#FFFFFF' }}>{mode === 'voice' ? 'On a call with BACI' : 'Talk to BACI'}</Text>
-          <Text style={{ fontFamily: fonts.body, fontSize: 13, color: '#D6E6E0' }}>Ask out loud about bills, spending or a purchase.</Text>
+          <Text style={{ fontFamily: fonts.body, fontSize: 13, color: 'rgba(255,255,255,0.78)' }}>Ask out loud about bills, spending or a purchase.</Text>
         </View>
         <Icon name="chevron" size={18} color="#FFFFFF" />
       </Pressable>

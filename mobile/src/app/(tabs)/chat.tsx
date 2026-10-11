@@ -8,7 +8,7 @@ import { Icon, IconName } from '../../components/Icon';
 import { AffordabilityCard, QuickReply } from '../../components/AffordabilityCard';
 import { ChatItem, useAgentChat } from '../../agent/AgentChat';
 import { money } from '../../lib/format';
-import { colors, fonts, glass } from '../../theme';
+import { colors, fonts, glassBar } from '../../theme';
 
 // A1 Ask BACI — /chat (A2 clarify turns and 10 affordability cards render in the log)
 export default function Chat() {
@@ -54,7 +54,7 @@ export default function Chat() {
     <Backdrop>
       <SafeAreaView style={{ flex: 1 }} edges={['top']}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <View style={{ paddingTop: 12, paddingBottom: 10, paddingHorizontal: 16, flexDirection: 'row', gap: 10, alignItems: 'center', borderBottomWidth: 1, borderBottomColor: 'rgba(22,24,29,0.06)' }}>
+        <View style={{ paddingTop: 12, paddingBottom: 10, paddingHorizontal: 16, flexDirection: 'row', gap: 10, alignItems: 'center', borderBottomWidth: 1, borderBottomColor: colors.hairline }}>
           <Orb size={40} state={chat.orbState} level={chat.orbLevel} interactive={false} />
           <View style={{ flex: 1 }}>
             <Display accessibilityRole="header" style={{ fontSize: 20 }}>
@@ -96,7 +96,7 @@ export default function Chat() {
           ) : null}
         </ScrollView>
 
-        <View style={{ paddingVertical: 12, paddingHorizontal: 16, flexDirection: 'row', gap: 8, alignItems: 'flex-end', ...glass, borderWidth: 0, borderTopWidth: 1, borderTopColor: colors.glassEdge, backgroundColor: 'rgba(255,255,255,0.55)' }}>
+        <View style={{ paddingVertical: 12, paddingHorizontal: 16, flexDirection: 'row', gap: 8, alignItems: 'flex-end', ...glassBar, borderTopWidth: 1, borderTopColor: colors.hairline }}>
           <TextInput
             accessibilityLabel="Message BACI"
             value={draft}
@@ -233,7 +233,7 @@ function VoicePanel() {
   const label = status === 'connecting' ? 'Connecting…' : isMuted ? 'Muted' : isSpeaking ? 'BACI is speaking' : 'Listening…';
 
   return (
-    <View accessibilityLiveRegion="polite" style={{ paddingVertical: 14, paddingHorizontal: 16, alignItems: 'center', gap: 10, borderBottomWidth: 1, borderBottomColor: 'rgba(22,24,29,0.06)' }}>
+    <View accessibilityLiveRegion="polite" style={{ paddingVertical: 14, paddingHorizontal: 16, alignItems: 'center', gap: 10, borderBottomWidth: 1, borderBottomColor: colors.hairline }}>
       <Orb size={160} state={orbState} level={orbLevel} accessibilityLabel={label} />
       <Row gap={8}>
         {status === 'connecting' ? <ActivityIndicator size="small" color={colors.primary} /> : null}

@@ -109,9 +109,26 @@ The bank picker can list real banks from [Plaid](https://plaid.com)'s institutio
 - **What's real:** bank names, logos and brand colours. Signing in and approving is still simulated: approving a real bank shows sample accounts. Linking real accounts needs a server that holds the Plaid secret and runs Plaid Link, which GitHub Pages can't host.
 - **Without the secrets:** the picker shows the fictional sandbox banks from the design (Meridian, Harbour…). Sample data always uses those.
 
+## Design system
+
+BACI uses dark navy glass, after the Revolut onboarding and Conceptzilla banking references. All tokens live in `src/theme.ts`; shared components in `src/components/ui.tsx` use them, so change the look there, not in screens.
+
+| Token group | What it's for |
+| --- | --- |
+| **Ground** | `Backdrop` draws `assets/backdrop.jpg`: a royal-blue glow at the top fading to near-black, with fine grain. `colors.ground` is the fallback. |
+| **Glass** | `glass`: translucent fill (`surface`, 7% white), a light edge (`glassEdge`), and a 24px backdrop blur on web. Used by cards, chips, back buttons and chat bubbles. `glassBar` is darker glass for the tab bar and chat composer; `sheet` is opaque navy for dialogs; `surfaceRaised` is for pressed and selected states. |
+| **Text** | `ink` (white) for headings and values, `inkSoft` for secondary text, `muted` for captions and hints. |
+| **Actions** | Main action: white pill (`cta`) with dark text (`onCta`). Secondary: raised glass pill. Accent blue (`primary`) for links, progress, checkboxes, toggles and the user's chat bubbles. Selected chips turn white. |
+| **Status** | `success`, `warn`, `danger` and `info` each have a tinted glass background (`*Bg`) and light text (`*Fg`, `*Ink`). |
+| **Type** | Instrument Sans throughout. `type.hero` (40), `h1` (30), `h2` (22): bold with tight letter-spacing. `body` (15/21), `small`, `label` and `eyebrow` (uppercase, tracked). |
+| **Shape** | `radius`: `sm` 10, `md` 14 (banners, inputs), `lg` 20 (cards), `sheet` 28 (dialogs), `pill` (buttons and chips). Spacing in `space` (4/8/12/16/24). |
+| **Orb** | The blue glass orb is BACI's avatar and voice indicator (see below). |
+
+The simulated bank sign-in page (04b) is the exception: it stays white in the bank's own colours, because it stands in for the bank's site, not BACI's.
+
 ## The orb
 
-BACI's orb (`src/components/orb/`) is a glassy green sphere with smoke inside. It appears on Welcome, Home, Ask BACI and the onboarding headers.
+BACI's orb (`src/components/orb/`) is a glassy blue sphere with smoke inside. It appears on Welcome, Home, Ask BACI and the onboarding headers.
 - **Web:** `Orb.web.tsx` renders the shader in `orbShader.ts` live with WebGL. The light follows your pointer, dragging spins the smoke with inertia, and a tap (or Enter) sends a ripple. Small orbs and browsers without WebGL use the image version.
 - **iOS/Android:** `OrbImage.tsx` animates `assets/orb.png`. It turns slowly, breathes, spins when dragged and ripples on tap.
 - **During a voice call:** the orb follows the agent's state (`orbState`, `orbLevel` from `AgentChat`). It breathes while listening and swells with BACI's voice while speaking. On Ask BACI, tap the large orb to start a call.
