@@ -1,7 +1,7 @@
-import { Text, View } from 'react-native';
+import { Text, useWindowDimensions, View } from 'react-native';
 import { router } from 'expo-router';
-import { Body, Button, Display, ErrorBanner, Eyebrow, IconTile, Muted, Row, Screen, Stack, StepBar } from '../components/ui';
-import { Icon, IconName } from '../components/Icon';
+import { Button, Card, ErrorBanner, Muted, Screen, StepBar } from '../components/ui';
+import { Orb } from '../components/orb/Orb';
 import { loadSampleData, patchOnboarding } from '../services/api';
 import { useMutation } from '../services/useQuery';
 import { colors, fonts } from '../theme';
@@ -10,11 +10,20 @@ import { colors, fonts } from '../theme';
 export default function Intro() {
   const start = useMutation(patchOnboarding);
   const demo = useMutation(loadSampleData);
+  const { height } = useWindowDimensions();
+  const orbSize = Math.max(160, Math.min(260, height * 0.3));
 
   return (
     <Screen
+      scroll={false}
       footer={
-        <>
+        <Card style={{ gap: 12, padding: 18 }}>
+          <Text accessibilityRole="header" style={{ fontFamily: fonts.display, fontSize: 24, lineHeight: 29, color: colors.ink }}>
+            Hello, I'm BACI
+          </Text>
+          <Muted style={{ fontSize: 15.5, lineHeight: 22 }}>
+            Your financial intelligence agent. With your permission, I'll look at your spending and savings together, then answer questions like “Can I afford this?” in plain English.
+          </Muted>
           <ErrorBanner error={start.error ?? demo.error} />
           <Button
             label={start.busy ? 'Starting…' : 'Get started'}
@@ -32,55 +41,15 @@ export default function Intro() {
               if ((await demo.run()).ok) router.replace('/home');
             }}
           />
-          <Muted style={{ fontSize: 12.5, textAlign: 'center' }}>BACI provides information, not regulated financial advice.</Muted>
-        </>
+          <Muted style={{ fontSize: 12, textAlign: 'center' }}>BACI provides information, not regulated financial advice.</Muted>
+        </Card>
       }
     >
-      <Stack gap={12}>
-        <Text style={{ fontFamily: fonts.displayBold, fontSize: 22, letterSpacing: 0.4, color: colors.ink }}>
-          BAC<Text style={{ color: colors.primary }}>I</Text>
-        </Text>
-        <StepBar step={1} />
-        <Muted style={{ fontSize: 12.5 }}>Step 1 of 5</Muted>
-      </Stack>
-
-      <View style={{ alignItems: 'center', paddingTop: 8 }}>
-        <View style={{ width: 168, height: 168, borderRadius: 84, borderWidth: 1.5, borderColor: colors.ringOuter, alignItems: 'center', justifyContent: 'center' }}>
-          <View style={{ width: 130, height: 130, borderRadius: 65, borderWidth: 1.5, borderColor: colors.ringInner, alignItems: 'center', justifyContent: 'center' }}>
-            <View style={{ width: 92, height: 92, borderRadius: 46, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center' }}>
-              <Icon name="sparkle" size={40} color="#FFFFFF" strokeWidth={1.6} />
-            </View>
-          </View>
-        </View>
+      <StepBar step={1} label="Welcome" />
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+        <Orb size={orbSize} accessibilityLabel="BACI. Drag to spin, tap to wake." />
+        <Text style={{ fontFamily: fonts.medium, fontSize: 12.5, color: colors.muted, letterSpacing: 0.3 }}>Drag to spin · tap to wake</Text>
       </View>
-
-      <Stack gap={8} style={{ alignItems: 'center' }}>
-        <Eyebrow style={{ fontSize: 13 }}>Finance Intelligence Agent</Eyebrow>
-        <Display accessibilityRole="header" style={{ fontSize: 30, lineHeight: 35, textAlign: 'center' }}>
-          One clear view of all your money
-        </Display>
-        <Muted style={{ fontSize: 16, lineHeight: 24, textAlign: 'center' }}>
-          With your permission, BACI connects your accounts and analyses your spending and savings together — then answers questions like “Can I afford this?” in plain English.
-        </Muted>
-      </Stack>
-
-      <Stack gap={16}>
-        <Feature icon="shield" title="Secure Vault" body="Read-only access through regulated Open Banking. BACI never sees your bank password, and you can disconnect any account at any time." />
-        <Feature icon="bell" title="Smart Alerts" body="Heads-ups before bills land, duplicate subscriptions, and spending that's drifting from normal." />
-        <Feature icon="mic" title="Talk it through" body="Ask BACI out loud or by text. Answers are worked out from your connected accounts." />
-      </Stack>
     </Screen>
-  );
-}
-
-function Feature({ icon, title, body }: { icon: IconName; title: string; body: string }) {
-  return (
-    <Row style={{ alignItems: 'flex-start' }}>
-      <IconTile name={icon} />
-      <View style={{ flex: 1, gap: 2 }}>
-        <Display style={{ fontSize: 18 }}>{title}</Display>
-        <Body style={{ fontSize: 14, lineHeight: 20, color: colors.muted }}>{body}</Body>
-      </View>
-    </Row>
   );
 }

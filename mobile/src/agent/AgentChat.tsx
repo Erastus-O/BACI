@@ -10,6 +10,7 @@ import {
 import { ApiError, calculatePurchaseImpact, describeImpact, describeSnapshot, getCommitments, serverEvents, snapshotForAgent } from '../services/api';
 import { parseAmount, parseItem, parseTerm } from '../lib/format';
 import { ChatItem, coverageNotices, Ctx, followUps, initialCtx, respond, welcome } from './orchestrator';
+import type { OrbState } from '../components/orb/types';
 import { ensureMicPermission, isAgentConfigured, sessionAuth, SessionMode } from './config';
 
 export type { ChatItem } from './orchestrator';
@@ -22,6 +23,10 @@ type AgentChatValue = {
   mode: SessionMode | null;
   status: 'disconnected' | 'connecting' | 'connected' | 'error';
   isSpeaking: boolean;
+  /** What the orb should show right now. */
+  orbState: OrbState;
+  /** Live voice level 0..1 for the orb: BACI's voice while speaking, the user's while listening. */
+  orbLevel: () => number;
   isMuted: boolean;
   error: string | null;
   send: (text: string) => Promise<boolean>;
@@ -57,7 +62,7 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
 }
 
 function AgentChatInner({ children }: { children: ReactNode }) {
-  const { startSession, endSession, sendUserMessage, sendContextualUpdate } = useConversationControls();
+  const { startSession, endSession, sendUserMessage, sendContextualUpdate, getOutputVolume, getInputVolume } = useConversationControls();
   const { status, message } = useConversationStatus();
   const { isSpeaking } = useConversationMode();
   const { isMuted, setMuted } = useConversationInput();
@@ -293,6 +298,18 @@ function AgentChatInner({ children }: { children: ReactNode }) {
     };
   }, [status, shareSnapshot]);
 
+  const inCall = mode === 'voice' && status === 'connected';
+  const orbState: OrbState =
+    status === 'connecting' ? 'connecting' : inCall ? (isSpeaking ? 'speaking' : 'listening') : thinking ? 'thinking' : 'idle';
+  const orbLevel = useCallback(() => {
+    if (!inCall) return 0;
+    try {
+      return Math.min(1, (isSpeaking ? getOutputVolume() : getInputVolume()) * 1.6);
+    } catch {
+      return 0;
+    }
+  }, [inCall, isSpeaking, getOutputVolume, getInputVolume]);
+
   const value: AgentChatValue = {
     configured: isAgentConfigured,
     items,
@@ -300,6 +317,8 @@ function AgentChatInner({ children }: { children: ReactNode }) {
     mode,
     status,
     isSpeaking,
+    orbState,
+    orbLevel,
     isMuted,
     error: error ?? (status === 'error' ? (message ?? 'Connection error') : null),
     send,

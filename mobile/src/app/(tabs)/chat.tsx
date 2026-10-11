@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Animated, Easing, KeyboardAvoidingView, NativeSyntheticEvent, Platform, Pressable, ScrollView, Text, TextInput, TextInputKeyPressEventData, View } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, NativeSyntheticEvent, Platform, Pressable, ScrollView, Text, TextInput, TextInputKeyPressEventData, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
-import { Banner, Body, Display, Muted, Row } from '../../components/ui';
+import { Backdrop, Banner, Body, Display, Muted, Row } from '../../components/ui';
+import { Orb } from '../../components/orb/Orb';
 import { Icon, IconName } from '../../components/Icon';
 import { AffordabilityCard, QuickReply } from '../../components/AffordabilityCard';
 import { ChatItem, useAgentChat } from '../../agent/AgentChat';
@@ -50,12 +51,11 @@ export default function Chat() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.ground }} edges={['top']}>
+    <Backdrop>
+      <SafeAreaView style={{ flex: 1 }} edges={['top']}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <View style={{ paddingTop: 12, paddingBottom: 10, paddingHorizontal: 16, flexDirection: 'row', gap: 10, alignItems: 'center', borderBottomWidth: 1, borderBottomColor: colors.border }}>
-          <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center' }}>
-            <Icon name="sparkleSm" size={16} color="#FFFFFF" strokeWidth={2} />
-          </View>
+        <View style={{ paddingTop: 12, paddingBottom: 10, paddingHorizontal: 16, flexDirection: 'row', gap: 10, alignItems: 'center', borderBottomWidth: 1, borderBottomColor: 'rgba(22,24,29,0.06)' }}>
+          <Orb size={40} state={chat.orbState} level={chat.orbLevel} interactive={false} />
           <View style={{ flex: 1 }}>
             <Display accessibilityRole="header" style={{ fontSize: 20 }}>
               Ask BACI
@@ -74,6 +74,12 @@ export default function Chat() {
           contentContainerStyle={{ padding: 16, gap: 14, flexGrow: 1 }}
           keyboardShouldPersistTaps="handled"
         >
+          {!inCall && lastUserIndex < 0 ? (
+            <View style={{ alignItems: 'center', gap: 8, paddingTop: 8, paddingBottom: 4 }}>
+              <Orb size={150} state={chat.orbState} onPress={chat.configured ? chat.startCall : undefined} accessibilityLabel={chat.configured ? 'Talk to BACI' : 'BACI. Drag to spin.'} />
+              <Muted style={{ fontSize: 12.5 }}>{chat.configured ? 'Tap the orb to talk · or type below' : 'Drag the orb to spin · type below to ask'}</Muted>
+            </View>
+          ) : null}
           {chat.items.map((item, i) => (
             // Quick replies and follow-ups only on turns after the user's last message.
             <Turn key={item.id} item={item} latest={i > lastUserIndex} onReply={(t) => submit(t)} />
@@ -90,7 +96,7 @@ export default function Chat() {
           ) : null}
         </ScrollView>
 
-        <View style={{ paddingVertical: 12, paddingHorizontal: 16, flexDirection: 'row', gap: 8, alignItems: 'flex-end', borderTopWidth: 1, borderTopColor: colors.border }}>
+        <View style={{ paddingVertical: 12, paddingHorizontal: 16, flexDirection: 'row', gap: 8, alignItems: 'flex-end', borderTopWidth: 1, borderTopColor: 'rgba(22,24,29,0.06)', backgroundColor: 'rgba(255,255,255,0.55)' }}>
           <TextInput
             accessibilityLabel="Message BACI"
             value={draft}
@@ -113,7 +119,8 @@ export default function Chat() {
           )}
         </View>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </Backdrop>
   );
 }
 
@@ -220,34 +227,18 @@ function StatusPill() {
   );
 }
 
-/** Live voice call: animated orb, speaking/listening state, mute and hang up. */
+/** Live voice call: the orb follows BACI's voice (and yours), with mute and hang up. */
 function VoicePanel() {
-  const { status, isSpeaking, isMuted, setMuted, endSession } = useAgentChat();
-  const pulse = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    const d = isSpeaking ? 500 : 1400;
-    const loop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulse, { toValue: 1, duration: d, easing: Easing.inOut(Easing.quad), useNativeDriver: Platform.OS !== 'web' }),
-        Animated.timing(pulse, { toValue: 0, duration: d, easing: Easing.inOut(Easing.quad), useNativeDriver: Platform.OS !== 'web' }),
-      ]),
-    );
-    loop.start();
-    return () => loop.stop();
-  }, [isSpeaking, pulse]);
-
-  const scale = pulse.interpolate({ inputRange: [0, 1], outputRange: [1, isSpeaking ? 1.18 : 1.06] });
+  const { status, isSpeaking, isMuted, setMuted, endSession, orbState, orbLevel } = useAgentChat();
   const label = status === 'connecting' ? 'Connecting…' : isMuted ? 'Muted' : isSpeaking ? 'BACI is speaking' : 'Listening…';
 
   return (
-    <View accessibilityLiveRegion="polite" style={{ paddingVertical: 16, paddingHorizontal: 16, alignItems: 'center', gap: 12, backgroundColor: colors.surface, borderBottomWidth: 1, borderBottomColor: colors.border }}>
-      <View style={{ width: 112, height: 112, borderRadius: 56, borderWidth: 1.5, borderColor: colors.ringOuter, alignItems: 'center', justifyContent: 'center' }}>
-        <Animated.View style={{ width: 84, height: 84, borderRadius: 42, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center', transform: [{ scale }] }}>
-          {status === 'connecting' ? <ActivityIndicator color="#FFFFFF" /> : <Icon name={isSpeaking ? 'waveform' : 'mic'} size={34} color="#FFFFFF" />}
-        </Animated.View>
-      </View>
-      <Text style={{ fontFamily: fonts.semibold, fontSize: 15, color: colors.ink }}>{label}</Text>
+    <View accessibilityLiveRegion="polite" style={{ paddingVertical: 14, paddingHorizontal: 16, alignItems: 'center', gap: 10, borderBottomWidth: 1, borderBottomColor: 'rgba(22,24,29,0.06)' }}>
+      <Orb size={160} state={orbState} level={orbLevel} accessibilityLabel={label} />
+      <Row gap={8}>
+        {status === 'connecting' ? <ActivityIndicator size="small" color={colors.primary} /> : null}
+        <Text style={{ fontFamily: fonts.semibold, fontSize: 15, color: colors.ink }}>{label}</Text>
+      </Row>
       <Row gap={16}>
         <Pressable
           accessibilityRole="button"

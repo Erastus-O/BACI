@@ -1,6 +1,7 @@
 // Tokens taken from the BACI design canvas (Claude Design).
 export const colors = {
-  ground: '#F5F3EE',
+  // Fallback behind the gradient backdrop (assets/backdrop.jpg).
+  ground: '#E9EFE6',
   surface: '#FFFFFF',
   ink: '#16181D',
   inkSoft: '#454A54',
@@ -13,6 +14,9 @@ export const colors = {
   border: '#E1DDD3',
   hairline: '#EFECE5',
   control: '#C9C4B8',
+  chipLine: '#8E8A82',
+  toggleOff: '#9A968B',
+  stepIdle: '#E4E1D8',
   track: '#EFECE5',
   disabled: '#D7D3CA',
 

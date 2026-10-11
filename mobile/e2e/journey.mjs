@@ -45,11 +45,11 @@ const ok = (s) => console.log(`  ✓ ${s}`);
 try {
   step('01 → 02 (switch one off, then on) → 03 (Skip) → 04');
   await page.goto(`${base}/`);
-  await see('One clear view of all your money');
+  await see("Hello, I'm BACI");
   await see('not regulated financial advice');
   await shot('01-welcome');
   await click('Get started');
-  await see('What BACI can look at');
+  await see('What do you want me to access?');
   const sw = visible(page.getByRole('switch', { name: 'Spending categories' }));
   await sw.click();
   await see('7 of 9 allowed');
@@ -57,7 +57,7 @@ try {
   await see('8 of 9 allowed');
   await shot('02-consent');
   await click('Agree and continue');
-  await see('A little about you');
+  await see('a little about you');
   await shot('03-profile');
   await click('Skip for now');
   await see('Connect your first account');

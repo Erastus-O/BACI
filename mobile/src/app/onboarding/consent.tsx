@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { router } from 'expo-router';
-import { Banner, BackButton, Button, Card, ErrorBanner, H1, Muted, Row, Screen, Stack, StepBar, Strong, Toggle } from '../../components/ui';
+import { Banner, BackButton, Button, Card, ErrorBanner, Muted, PageHeader, Row, Screen, StepBar, Strong, Toggle } from '../../components/ui';
 import { CONSENT_VERSION, consentCategories, ConsentCategory } from '../../data/mock';
 import { defaultPermissions, patchOnboarding, putConsent } from '../../services/api';
 import { useMutation } from '../../services/useQuery';
@@ -35,14 +35,13 @@ export default function Consent() {
         </>
       }
     >
-      <Stack gap={12}>
+      <Row gap={10}>
         <BackButton onPress={() => router.replace('/welcome')} />
-        <StepBar step={2} />
-      </Stack>
-      <Stack gap={6}>
-        <H1>What BACI can look at</H1>
-        <Muted>Choose what BACI may analyse. Change or revoke this any time. BACI can't move money.</Muted>
-      </Stack>
+        <View style={{ flex: 1 }}>
+          <StepBar step={2} label="Data consent" />
+        </View>
+      </Row>
+      <PageHeader title="What do you want me to access?" subtitle="Choose what BACI may analyse. Change or revoke this any time. BACI can't move money." />
       <Row style={{ justifyContent: 'space-between' }}>
         <Muted style={{ fontSize: 14 }}>
           {count} of {consentCategories.length} allowed
@@ -57,12 +56,12 @@ export default function Consent() {
       </Row>
       {allOff ? <Banner tone="warn">BACI can't do anything without at least one category. Turn on what you're comfortable sharing.</Banner> : null}
       {noTx ? <Banner tone="info">{consentCategories[0].impact}</Banner> : null}
-      <Card style={{ paddingVertical: 0 }}>
-        {consentCategories.map((c, i) => (
-          <Row key={c.id} style={{ paddingVertical: 10, borderBottomWidth: i === consentCategories.length - 1 ? 0 : 1, borderBottomColor: colors.hairline }}>
-            <View style={{ flex: 1, gap: 1 }}>
-              <Strong>{c.label}</Strong>
-              <Muted style={{ fontSize: 12.5, lineHeight: 17 }}>{c.desc}</Muted>
+      <Card style={{ paddingVertical: 6, paddingHorizontal: 20 }}>
+        {consentCategories.map((c) => (
+          <Row key={c.id} style={{ paddingVertical: 11 }}>
+            <View style={{ flex: 1, gap: 2 }}>
+              <Strong style={{ fontSize: 16 }}>{c.label}</Strong>
+              <Muted style={{ fontSize: 13, lineHeight: 18 }}>{perms[c.id] ? 'Allowed' : c.desc}</Muted>
             </View>
             <Toggle label={c.label} value={perms[c.id]} onChange={(on) => setPerms({ ...perms, [c.id]: on })} />
           </Row>

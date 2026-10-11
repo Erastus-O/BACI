@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { Badge, Banner, Body, Button, Card, Display, ErrorBanner, Eyebrow, H1, Loading, Muted, Row, Screen, Stack, Strong } from '../../components/ui';
 import { Icon } from '../../components/Icon';
 import { useAgentChat } from '../../agent/AgentChat';
+import { Orb } from '../../components/orb/Orb';
 import { money } from '../../lib/format';
 import { ApiError, dismissInsight, getCommitments, getConnections, getGoals, getInsights, getSnapshot } from '../../services/api';
 import { isConsentError, useMutation, useQuery } from '../../services/useQuery';
@@ -16,13 +17,16 @@ export default function Home() {
   const bills = useQuery(getCommitments);
   const goals = useQuery(getGoals);
   const dismiss = useMutation(dismissInsight);
-  const { startCall, mode } = useAgentChat();
+  const { startCall, mode, orbState, orbLevel } = useAgentChat();
 
   const header = (
-    <Stack gap={2} style={{ paddingTop: 8 }}>
-      <Muted>Good to see you</Muted>
-      <H1>Your money, together</H1>
-    </Stack>
+    <Row gap={12} style={{ paddingTop: 8 }}>
+      <Orb size={52} state={orbState} interactive={false} />
+      <Stack gap={2} style={{ flex: 1 }}>
+        <Muted>Good to see you</Muted>
+        <H1>Your money, together</H1>
+      </Stack>
+    </Row>
   );
 
   if (isConsentError(snap.error)) return <Revoked header={header} />;
@@ -128,9 +132,7 @@ export default function Home() {
         }}
         style={({ pressed }) => [{ backgroundColor: pressed ? colors.primaryPressed : colors.primary, borderRadius: 16, paddingVertical: 14, paddingHorizontal: 16, flexDirection: 'row', gap: 12, alignItems: 'center' }]}
       >
-        <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.16)', alignItems: 'center', justifyContent: 'center' }}>
-          <Icon name="mic" size={18} color="#FFFFFF" />
-        </View>
+        <Orb size={40} state={orbState} level={orbLevel} interactive={false} />
         <View style={{ flex: 1 }}>
           <Text style={{ fontFamily: fonts.bold, fontSize: 15, color: '#FFFFFF' }}>{mode === 'voice' ? 'On a call with BACI' : 'Talk to BACI'}</Text>
           <Text style={{ fontFamily: fonts.body, fontSize: 13, color: '#D6E6E0' }}>Ask out loud about bills, spending or a purchase.</Text>
