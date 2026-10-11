@@ -18,6 +18,7 @@ const RADIUS = 55;
  */
 export function DeviceFrame({ children }: { children: ReactNode }) {
   const { width, height } = useWindowDimensions();
+  useEffect(hideScrollbars, []);
   const framed = Platform.OS === 'web' && width >= 560 && height >= 560;
   if (!framed) return <>{children}</>;
 
@@ -55,6 +56,15 @@ export function DeviceFrame({ children }: { children: ReactNode }) {
       </View>
     </View>
   );
+}
+
+/** Web: hide desktop scrollbars (content still scrolls), as on a phone. */
+function hideScrollbars() {
+  if (Platform.OS !== 'web' || typeof document === 'undefined' || document.getElementById('baci-no-scrollbars')) return;
+  const style = document.createElement('style');
+  style.id = 'baci-no-scrollbars';
+  style.textContent = '*{scrollbar-width:none;-ms-overflow-style:none}*::-webkit-scrollbar{display:none;width:0;height:0}';
+  document.head.appendChild(style);
 }
 
 function StatusBarOverlay() {
