@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import {
+  ImageBackground,
   Modal,
   Platform,
   Pressable,
@@ -16,6 +17,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { colors, fonts, radius } from '../theme';
 import { Icon, IconName } from './Icon';
+import { OrbImage } from './orb/OrbImage';
+
+const backdrop = require('../../assets/backdrop.jpg');
+
+/** The soft green gradient every screen sits on. */
+export function Backdrop({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) {
+  return (
+    <ImageBackground source={backdrop} resizeMode="cover" style={[{ flex: 1, backgroundColor: colors.ground }, style]}>
+      {children}
+    </ImageBackground>
+  );
+}
 
 // ---------- Layout ----------
 
@@ -34,16 +47,33 @@ export function Screen({
 }) {
   const body = padded ? styles.screenBody : undefined;
   return (
-    <SafeAreaView style={styles.screen} edges={edges}>
-      {scroll ? (
-        <ScrollView contentContainerStyle={[body, { flexGrow: 1 }]} keyboardShouldPersistTaps="handled">
-          {children}
-        </ScrollView>
-      ) : (
-        <View style={[body, { flex: 1 }]}>{children}</View>
-      )}
-      {footer ? <View style={styles.footer}>{footer}</View> : null}
-    </SafeAreaView>
+    <Backdrop>
+      <SafeAreaView style={styles.screen} edges={edges}>
+        {scroll ? (
+          <ScrollView contentContainerStyle={[body, { flexGrow: 1 }]} keyboardShouldPersistTaps="handled">
+            {children}
+          </ScrollView>
+        ) : (
+          <View style={[body, { flex: 1 }]}>{children}</View>
+        )}
+        {footer ? <View style={styles.footer}>{footer}</View> : null}
+      </SafeAreaView>
+    </Backdrop>
+  );
+}
+
+/** Screen heading in BACI's voice, with the orb as its avatar. */
+export function PageHeader({ title, subtitle }: { title: string; subtitle?: string }) {
+  return (
+    <View style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+      <OrbImage size={44} interactive={false} />
+      <View style={{ flex: 1, gap: 4, paddingTop: 6 }}>
+        <Text accessibilityRole="header" style={{ fontFamily: fonts.display, fontSize: 22, lineHeight: 27, color: colors.ink }}>
+          {title}
+        </Text>
+        {subtitle ? <Text style={{ fontFamily: fonts.body, fontSize: 14, lineHeight: 20, color: colors.muted }}>{subtitle}</Text> : null}
+      </View>
+    </View>
   );
 }
 
@@ -181,7 +211,8 @@ export function Chip({ label, selected, onPress }: { label: string; selected?: b
       onPress={onPress}
       style={[styles.chip, selected ? { backgroundColor: colors.primary, borderColor: colors.primary } : null]}
     >
-      <Text style={{ fontFamily: fonts.body, fontSize: 14, color: selected ? '#FFFFFF' : colors.ink }}>{label}</Text>
+      {selected ? <Icon name="check" size={16} color="#FFFFFF" strokeWidth={2.2} /> : null}
+      <Text style={{ fontFamily: fonts.body, fontSize: 15, color: selected ? '#FFFFFF' : colors.ink }}>{label}</Text>
     </Pressable>
   );
 }
@@ -223,9 +254,10 @@ export function Toggle({ value, onChange, label }: { value: boolean; onChange: (
       accessibilityLabel={label}
       value={value}
       onValueChange={onChange}
-      trackColor={{ true: colors.primary, false: colors.control }}
+      trackColor={{ true: colors.primary, false: colors.toggleOff }}
       thumbColor="#FFFFFF"
-      ios_backgroundColor={colors.control}
+      ios_backgroundColor={colors.toggleOff}
+      {...({ activeThumbColor: '#FFFFFF' } as object)}
     />
   );
 }
@@ -282,17 +314,24 @@ export function Banner({ tone, icon, children }: { tone: Tone; icon?: IconName; 
   );
 }
 
-export function StepBar({ step, total = 5 }: { step: number; total?: number }) {
+export function StepBar({ step, total = 5, label }: { step: number; total?: number; label?: string }) {
   return (
-    <View
-      accessibilityRole="progressbar"
-      accessibilityLabel={`Step ${step} of ${total}`}
-      accessibilityValue={{ min: 0, max: total, now: step }}
-      style={{ flexDirection: 'row', gap: 6 }}
-    >
-      {Array.from({ length: total }, (_, i) => (
-        <View key={i} style={{ flex: 1, height: 4, borderRadius: 4, backgroundColor: i < step ? colors.primary : colors.border }} />
-      ))}
+    <View style={{ gap: 8 }}>
+      <View
+        accessibilityRole="progressbar"
+        accessibilityLabel={`Step ${step} of ${total}${label ? `, ${label}` : ''}`}
+        accessibilityValue={{ min: 0, max: total, now: step }}
+        style={{ flexDirection: 'row', gap: 6 }}
+      >
+        {Array.from({ length: total }, (_, i) => (
+          <View key={i} style={{ flex: 1, height: 4, borderRadius: 4, backgroundColor: i < step ? colors.primary : colors.stepIdle }} />
+        ))}
+      </View>
+      {label ? (
+        <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.muted }}>
+          Step {step} of {total} · {label}
+        </Text>
+      ) : null}
     </View>
   );
 }
@@ -314,10 +353,10 @@ export function IconTile({ name, size = 40 }: { name: IconName; size?: number })
 }
 
 export const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.ground },
+  screen: { flex: 1, backgroundColor: 'transparent' },
   screenBody: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 20, gap: 16 },
-  footer: { paddingHorizontal: 16, paddingBottom: 12, paddingTop: 8, gap: 8, backgroundColor: colors.ground },
-  card: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: radius.lg, padding: 16 },
+  footer: { paddingHorizontal: 16, paddingBottom: 12, paddingTop: 8, gap: 8, backgroundColor: 'transparent' },
+  card: { backgroundColor: colors.surface, borderWidth: 1, borderColor: 'rgba(22,24,29,0.04)', borderRadius: radius.lg, padding: 16, shadowColor: '#1E3A2B', shadowOpacity: 0.06, shadowRadius: 18, shadowOffset: { width: 0, height: 6 }, elevation: 1 },
   h1: { fontFamily: fonts.display, fontSize: 28, lineHeight: 32, color: colors.ink },
   display: { fontFamily: fonts.display, color: colors.ink },
   body: { fontFamily: fonts.body, fontSize: 15, lineHeight: 21, color: colors.ink },
@@ -329,7 +368,7 @@ export const styles = StyleSheet.create({
   buttonMd: { height: 44 },
   buttonLabel: { fontFamily: fonts.semibold },
   back: { width: 44, height: 44, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' },
-  chip: { height: 40, paddingHorizontal: 14, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.control, backgroundColor: colors.surface, justifyContent: 'center' },
+  chip: { minHeight: 44, paddingHorizontal: 18, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.chipLine, backgroundColor: colors.surface, flexDirection: 'row', alignItems: 'center', gap: 6 },
   segmented: { flexDirection: 'row', gap: 4, backgroundColor: colors.hairline, borderRadius: 12, padding: 4 },
   segment: { flex: 1, height: 38, borderRadius: 9, alignItems: 'center', justifyContent: 'center' },
   segmentOn: { backgroundColor: colors.surface, shadowColor: colors.ink, shadowOpacity: 0.08, shadowRadius: 2, shadowOffset: { width: 0, height: 1 }, elevation: 1 },

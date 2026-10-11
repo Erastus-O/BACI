@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
-import { BackButton, Button, Chip, ErrorBanner, H1, Muted, Screen, Segmented, Stack, StepBar, Strong } from '../../components/ui';
+import { BackButton, Button, Card, Chip, ErrorBanner, Muted, PageHeader, Row, Screen, Stack, StepBar, Strong } from '../../components/ui';
 import { getProfile, patchOnboarding, peek, Profile as ProfileT, putProfile } from '../../services/api';
 import { useMutation, useQuery } from '../../services/useQuery';
 import { colors, fonts } from '../../theme';
@@ -53,70 +53,59 @@ export default function Profile() {
     else router.push({ pathname: '/onboarding/connect', params: { flow: 'onboarding' } });
   };
 
+  const chips = <T extends string>(label: string, options: readonly T[], value: T | null, set: (v: T) => void, toggle = false) => (
+    <Stack gap={10}>
+      <Strong style={{ fontSize: 16 }}>{label}</Strong>
+      <View accessibilityRole={toggle ? undefined : 'radiogroup'} accessibilityLabel={label} style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+        {options.map((o) => (
+          <Chip key={o} label={o} selected={value === o} onPress={() => (toggle && value === o ? set(null as unknown as T) : set(o))} />
+        ))}
+      </View>
+    </Stack>
+  );
+
   return (
-    <Screen
-      footer={
-        <>
-          <ErrorBanner error={save.error} />
+    <Screen>
+      <Row gap={10}>
+        <BackButton onPress={() => (editing ? router.back() : router.replace('/onboarding/consent'))} />
+        {!editing ? (
+          <View style={{ flex: 1 }}>
+            <StepBar step={3} label="About you" />
+          </View>
+        ) : null}
+      </Row>
+      <PageHeader
+        title={editing ? 'Your financial profile' : 'I’d love to know a little about you'}
+        subtitle="This helps BACI understand your financial profile and shape answers that suit you. Everything is optional."
+      />
+
+      <Card style={{ gap: 20, padding: 18 }}>
+        <MoneyField
+          id="income"
+          label="Annual take-home income"
+          value={income}
+          onChange={setIncome}
+          invalid={inc.invalid}
+          hint="We show this alongside what we detect in your accounts, and never overwrite it."
+        />
+        {chips('Current status', ['Employed', 'Self-employed', 'Student', 'Other'] as const, status, setStatus, true)}
+        {chips('Primary financial goal', ['Build savings', 'Pay off debt', 'Save for a home', 'Spend smarter'] as const, goal, setGoal, true)}
+        {chips('Investment risk approach', ['Cautious', 'Balanced', 'Adventurous'] as const, risk, setRisk)}
+        {chips('Insight frequency', ['Daily', 'Weekly', 'Monthly'] as const, frequency, setFrequency)}
+        <MoneyField
+          id="buffer"
+          label="Safety buffer"
+          value={buffer}
+          onChange={setBuffer}
+          invalid={buf.invalid}
+          hint="The least you want left in your current accounts. “Can I afford this?” warns you before you dip below it."
+        />
+        <ErrorBanner error={save.error} />
+        <Stack gap={6}>
           <Button label={save.busy ? 'Saving…' : editing ? 'Save profile' : 'Continue'} disabled={invalid || save.busy} onPress={() => next(false)} />
           {!editing ? <Button label="Skip for now" variant="ghost" size="md" disabled={save.busy} onPress={() => next(true)} /> : null}
-        </>
-      }
-    >
-      <Stack gap={12}>
-        <BackButton onPress={() => (editing ? router.back() : router.replace('/onboarding/consent'))} />
-        {!editing ? <StepBar step={3} /> : null}
-      </Stack>
-      <Stack gap={6}>
-        <H1>{editing ? 'Your financial profile' : 'A little about you'}</H1>
-        <Muted>Helps BACI frame answers around what matters to you. All optional.</Muted>
-      </Stack>
-
-      <MoneyField
-        id="income"
-        label="Annual take-home income"
-        value={income}
-        onChange={setIncome}
-        invalid={inc.invalid}
-        hint="We show this alongside what we detect in your accounts — never overwrite it."
-      />
-
-      <Stack gap={8}>
-        <Strong>Current status</Strong>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-          {(['Employed', 'Self-employed', 'Student', 'Other'] as const).map((s) => (
-            <Chip key={s} label={s} selected={status === s} onPress={() => setStatus(status === s ? null : s)} />
-          ))}
-        </View>
-      </Stack>
-
-      <Stack gap={8}>
-        <Strong>Primary financial goal</Strong>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-          {(['Build savings', 'Pay off debt', 'Save for a home', 'Spend smarter'] as const).map((g) => (
-            <Chip key={g} label={g} selected={goal === g} onPress={() => setGoal(goal === g ? null : g)} />
-          ))}
-        </View>
-      </Stack>
-
-      <Stack gap={8}>
-        <Strong>Investment risk approach</Strong>
-        <Segmented label="Investment risk approach" options={['Cautious', 'Balanced', 'Adventurous']} value={risk} onChange={setRisk} />
-      </Stack>
-
-      <Stack gap={8}>
-        <Strong>Insight frequency</Strong>
-        <Segmented label="Insight frequency" options={['Daily', 'Weekly', 'Monthly']} value={frequency} onChange={setFrequency} />
-      </Stack>
-
-      <MoneyField
-        id="buffer"
-        label="Safety buffer"
-        value={buffer}
-        onChange={setBuffer}
-        invalid={buf.invalid}
-        hint="The least you want left in your current accounts. “Can I afford this?” warns you before you dip below it."
-      />
+        </Stack>
+      </Card>
     </Screen>
   );
 }

@@ -94,6 +94,14 @@ With the agent off, *Ask BACI* still works on-device (`src/agent/orchestrator.ts
 
 In the deployed web app, voice works through the browser's microphone over HTTPS. Phones need a native build (see **Run it**).
 
+## The orb
+
+BACI's orb (`src/components/orb/`) is a glassy green sphere with smoke inside. It appears on Welcome, Home, Ask BACI and the onboarding headers.
+- **Web:** `Orb.web.tsx` renders the shader in `orbShader.ts` live with WebGL. The light follows your pointer, dragging spins the smoke with inertia, and a tap (or Enter) sends a ripple. Small orbs and browsers without WebGL use the image version.
+- **iOS/Android:** `OrbImage.tsx` animates `assets/orb.png`. It turns slowly, breathes, spins when dragged and ripples on tap.
+- **During a voice call:** the orb follows the agent's state (`orbState`, `orbLevel` from `AgentChat`). It breathes while listening and swells with BACI's voice while speaking. On Ask BACI, tap the large orb to start a call.
+- **Re-baking the image** after shader changes: `node scripts/bake-orb.mjs` (uses Playwright and Chromium).
+
 ## How it maps to the spec
 
 Routes mirror the spec. Each screen has the artboard ID in a comment at the top.
