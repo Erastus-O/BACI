@@ -44,7 +44,7 @@ function LiveConnect({ flow }: { flow: Flow }) {
         {flow === 'onboarding' ? <StepBar step={4} /> : null}
       </Stack>
       <Stack gap={6}>
-        <H1>{existing.length ? 'Connect another account' : 'Connect your first account'}</H1>
+        <H1>{existing.length ? 'Connect another account' : 'Connect your account'}</H1>
         <Muted>
           Find your bank, building society or card provider. You'll approve read-only access in your bank's app (or its website), then come straight back to choose which accounts BACI can use.
         </Muted>
@@ -98,7 +98,7 @@ function SandboxPicker({ flow }: { flow: Flow }) {
         {flow === 'onboarding' ? <StepBar step={4} /> : null}
       </Stack>
       <Stack gap={6}>
-        <H1>{existing.length ? 'Connect another account' : 'Connect your first account'}</H1>
+        <H1>{existing.length ? 'Connect another account' : 'Connect your account'}</H1>
         <Muted>Pick your bank, building society or card provider. You'll approve read-only access on their side, then choose which accounts BACI can use.</Muted>
         {existing.length ? (
           <Muted style={{ fontSize: 13 }}>
