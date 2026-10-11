@@ -98,7 +98,6 @@ The agent is public today. To make it private, turn on authentication in ElevenL
 - [ ] `ENCRYPTION_KEY` backed up somewhere other than Render.
 - [ ] Privacy notice and terms published and linked from the app and store listings; ICO fee paid.
 - [ ] Clarified with Plaid how BACI is covered for account information services.
-- [ ] Builds made with `EXPO_PUBLIC_SANDBOX=0`, so sandbox controls are hidden (the `preview` and `production` profiles already do this).
 - [ ] Tried it yourself with your own bank in Production: connect, wait for the transactions webhook, reconnect after revoking at the bank, disconnect, delete account.
 
 ## 4. Known limits (next steps)

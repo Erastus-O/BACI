@@ -163,7 +163,7 @@ Routes mirror the spec. Each screen has the artboard ID in a comment at the top.
 - **Replacing it:** swap the function bodies for `fetch` calls when the backend exists.
 - **Server rules it already enforces:** a failed *new* connection is deleted, and a failed re-authorisation stays `reauth_required`.
 
-**Dev-only controls:** turn them off with `EXPO_PUBLIC_SANDBOX=0`.
+**Dev-only controls** (sandbox outcomes on 04b, Simulate on 09, prototype controls in Settings) are hidden unless the build sets `EXPO_PUBLIC_SANDBOX=1`.
 - 04b: *Sandbox outcomes* (one account fails · link expires · bank not responding).
 - 09: *Simulate* (stale · re-auth · provider error · restore).
 - Settings: *Live data unavailable*, which previews A2's "won't guess" reply.
