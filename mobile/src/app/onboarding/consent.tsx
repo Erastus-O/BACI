@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { Banner, BackButton, Button, Card, ErrorBanner, Muted, PageHeader, Row, Screen, StepBar, Strong, Toggle } from '../../components/ui';
-import { CONSENT_VERSION, consentCategories, ConsentCategory } from '../../data/mock';
+import { consentCategories, ConsentCategory } from '../../data/mock';
 import { defaultPermissions, patchOnboarding, putConsent } from '../../services/api';
 import { useMutation } from '../../services/useQuery';
 import { colors, fonts } from '../../theme';
@@ -31,7 +31,6 @@ export default function Consent() {
               if ((await save.run(perms)).ok) router.push('/onboarding/profile');
             }}
           />
-          <Muted style={{ fontSize: 12, textAlign: 'center' }}>Consent version {CONSENT_VERSION} · we record when you agree and what you allowed</Muted>
         </>
       }
     >
