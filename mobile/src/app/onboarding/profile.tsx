@@ -76,7 +76,7 @@ export default function Profile() {
       </Row>
       <PageHeader
         title={editing ? 'Your financial profile' : 'I’d love to know a little about you'}
-        subtitle="This helps BACI understand your financial profile and shape answers that suit you. Everything is optional."
+        subtitle="This helps BACI understand your financial profile and shape answers that suit you."
       />
 
       <Card style={{ gap: 20, padding: 18 }}>
