@@ -94,6 +94,20 @@ With the agent off, *Ask BACI* still works on-device (`src/agent/orchestrator.ts
 
 In the deployed web app, voice works through the browser's microphone over HTTPS. Phones need a native build (see **Run it**).
 
+## Real banks (GoCardless)
+
+The bank picker can list real banks with their logos from [GoCardless Bank Account Data](https://bankaccountdata.gocardless.com) (formerly Nordigen).
+- **Set up:**
+  1. Create a free GoCardless Bank Account Data account.
+  2. Under **Developers → User secrets**, create a secret ID and key.
+  3. Add them as repository secrets `GOCARDLESS_SECRET_ID` and `GOCARDLESS_SECRET_KEY`.
+  4. On the next deploy, `scripts/fetch-banks.mjs` writes the list to `src/data/banks.generated.json`.
+- **Country:** the default is GB. Set a repository variable `BANKS_COUNTRY` (for example `ie` or `de`) for another country.
+- **Locally:** run `GOCARDLESS_SECRET_ID=… GOCARDLESS_SECRET_KEY=… npm run banks [country]`.
+- **Secret safety:** the secret is only used at build time and never ships in the app.
+- **What's real:** bank names, BICs and logos. Signing in and approving is still simulated: approving a real bank shows sample accounts. Linking real accounts needs a server that holds the GoCardless secret and creates requisitions, which GitHub Pages can't host.
+- **Without the secrets:** the picker shows the fictional sandbox banks from the design (Meridian, Harbour…). Sample data always uses those.
+
 ## The orb
 
 BACI's orb (`src/components/orb/`) is a glassy green sphere with smoke inside. It appears on Welcome, Home, Ask BACI and the onboarding headers.

@@ -1,5 +1,6 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import {
+  Image,
   ImageBackground,
   Modal,
   Platform,
@@ -336,7 +337,16 @@ export function StepBar({ step, total = 5, label }: { step: number; total?: numb
   );
 }
 
-export function BankMark({ initial, colour, size = 40 }: { initial: string; colour: string; size?: number }) {
+/** A bank's logo, or its initial on its colour when there's no logo (or it fails to load). */
+export function BankMark({ initial, colour, logo, size = 40 }: { initial: string; colour: string; logo?: string; size?: number }) {
+  const [failed, setFailed] = useState(false);
+  if (logo && !failed) {
+    return (
+      <View style={{ width: size, height: size, borderRadius: size * 0.3, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: colors.hairline, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }}>
+        <Image source={{ uri: logo }} onError={() => setFailed(true)} resizeMode="contain" accessibilityIgnoresInvertColors style={{ width: size * 0.78, height: size * 0.78 }} />
+      </View>
+    );
+  }
   return (
     <View style={{ width: size, height: size, borderRadius: size * 0.3, backgroundColor: colour, alignItems: 'center', justifyContent: 'center' }}>
       <Text style={{ color: '#FFFFFF', fontFamily: fonts.bold, fontSize: size * 0.42 }}>{initial}</Text>

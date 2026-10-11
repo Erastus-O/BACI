@@ -54,7 +54,7 @@ export default function AddAnother() {
           <Eyebrow style={{ fontSize: 13, paddingBottom: 6 }}>Connected so far</Eyebrow>
           {list.map((c) => (
             <Row key={c.id} style={{ paddingVertical: 10, borderTopWidth: 1, borderTopColor: colors.hairline }}>
-              <BankMark initial={c.institution.initial} colour={c.institution.brandColour} size={36} />
+              <BankMark initial={c.institution.initial} colour={c.institution.brandColour} logo={c.institution.logo} size={36} />
               <View style={{ flex: 1 }}>
                 <Strong>{c.institution.name}</Strong>
                 <Muted style={{ fontSize: 13 }}>{c.accounts.filter((a) => a.selected).map((a) => a.name).join(' · ')}</Muted>

@@ -7,6 +7,10 @@ import { getConnections, getInstitutions } from '../services/api';
 import { useQuery } from '../services/useQuery';
 import { colors, fonts } from '../theme';
 import { Flow } from './flow';
+import { bankDirectory } from '../data/banks';
+
+// Without a search, show this many (popular banks first); searching covers the full list.
+const FIRST = 25;
 
 // 04 Connect a bank — /onboarding/connect (flow=onboarding), /accounts/add (flow=accounts)
 export function InstitutionPicker({ flow }: { flow: Flow }) {
@@ -14,7 +18,9 @@ export function InstitutionPicker({ flow }: { flow: Flow }) {
   const conns = useQuery(getConnections);
   const [query, setQuery] = useState('');
   const q = query.trim().toLowerCase();
-  const list = (insts.data ?? []).filter((b) => !q || b.name.toLowerCase().includes(q));
+  const matches = (insts.data ?? []).filter((b) => !q || b.name.toLowerCase().includes(q) || b.bic?.toLowerCase().startsWith(q));
+  const list = q ? matches : matches.slice(0, FIRST);
+  const more = matches.length - list.length;
   const existing = (conns.data ?? []).filter((c) => c.status !== 'awaiting_authorisation');
 
   return (
@@ -59,7 +65,7 @@ export function InstitutionPicker({ flow }: { flow: Flow }) {
                 onPress={() => router.push({ pathname: '/connect/before/[institutionId]', params: { institutionId: b.id, flow } })}
                 style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 64, borderBottomWidth: i === list.length - 1 ? 0 : 1, borderBottomColor: colors.hairline, opacity: pressed ? 0.7 : 1 })}
               >
-                <BankMark initial={b.initial} colour={b.brandColour} />
+                <BankMark initial={b.initial} colour={b.brandColour} logo={b.logo} />
                 <View style={{ flex: 1 }}>
                   <Strong>{b.name}</Strong>
                   <Muted style={{ fontSize: 13 }}>{connected ? `Connected · ${b.types}` : b.types}</Muted>
@@ -68,6 +74,11 @@ export function InstitutionPicker({ flow }: { flow: Flow }) {
               </Pressable>
             );
           })}
+          {more > 0 ? (
+            <Muted style={{ fontSize: 13, paddingVertical: 14, paddingHorizontal: 4 }}>
+              {more} more — search to find yours.
+            </Muted>
+          ) : null}
           {list.length === 0 ? (
             <View style={{ paddingVertical: 20, paddingHorizontal: 4, gap: 4 }}>
               <Strong>No providers match “{query}”</Strong>
@@ -75,6 +86,11 @@ export function InstitutionPicker({ flow }: { flow: Flow }) {
             </View>
           ) : null}
         </Card>
+      ) : null}
+      {bankDirectory.source === 'gocardless' ? (
+        <Muted style={{ fontSize: 12, textAlign: 'center' }}>
+          {(insts.data ?? []).length} {bankDirectory.country} banks and logos from GoCardless Bank Account Data · updated {bankDirectory.fetchedAt}. Connecting is simulated in this prototype.
+        </Muted>
       ) : null}
       <Banner tone="info">You can add more banks, cards and savings accounts next — BACI works best with all of them.</Banner>
     </Screen>

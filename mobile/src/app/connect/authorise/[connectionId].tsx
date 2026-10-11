@@ -3,7 +3,8 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Icon } from '../../../components/Icon';
-import { sandboxAccounts } from '../../../data/mock';
+import { BankMark } from '../../../components/ui';
+import { accountsFor } from '../../../data/banks';
 import { cacheDiscovered, useFlow } from '../../../features/flow';
 import { sandboxEnabled } from '../../../features/sandbox';
 import { ApiError, authorise, getConnection, SandboxOutcome } from '../../../services/api';
@@ -29,7 +30,7 @@ export default function BankAuthorise() {
     );
   }
   const brand = bank.brandColour;
-  const accounts = sandboxAccounts[bank.id] ?? [];
+  const accounts = accountsFor(bank.id);
 
   const submit = async (approved: boolean) => {
     setBusy(true);
@@ -61,9 +62,13 @@ export default function BankAuthorise() {
         <View style={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: 18, gap: 14 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <View style={{ width: 30, height: 30, borderRadius: 8, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' }}>
-                <Text style={{ color: brand, fontFamily: fonts.bold }}>{bank.initial}</Text>
-              </View>
+              {bank.logo ? (
+                <BankMark initial={bank.initial} colour={brand} logo={bank.logo} size={30} />
+              ) : (
+                <View style={{ width: 30, height: 30, borderRadius: 8, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' }}>
+                  <Text style={{ color: brand, fontFamily: fonts.bold }}>{bank.initial}</Text>
+                </View>
+              )}
               <Text style={{ color: '#FFFFFF', fontFamily: fonts.bold, fontSize: 18 }}>{bank.name}</Text>
             </View>
             <View style={{ flexDirection: 'row', gap: 4, alignItems: 'center', opacity: 0.85 }}>

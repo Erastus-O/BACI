@@ -45,7 +45,7 @@ export default function Reconnect() {
     >
       <BackButton label="Back to accounts" onPress={() => router.replace('/accounts')} />
       <Row>
-        <BankMark initial={bank.initial} colour={bank.brandColour} size={48} />
+        <BankMark initial={bank.initial} colour={bank.brandColour} logo={bank.logo} size={48} />
         <Badge tone="danger" icon="warn" label="Reconnect needed" />
       </Row>
       <Stack gap={6}>
