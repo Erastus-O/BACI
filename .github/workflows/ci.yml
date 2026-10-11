@@ -1,0 +1,61 @@
+name: CI
+
+# Server tests against a real Postgres, app typecheck, and the live end-to-end journey
+# (web app → BACI API → Postgres, with a stand-in for Plaid).
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: baci_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/baci_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Server — install, typecheck, test
+        working-directory: server
+        run: |
+          npm ci
+          npm run typecheck
+          npm test
+
+      - name: App — install and typecheck
+        working-directory: mobile
+        run: |
+          npm ci
+          npx tsc --noEmit
+
+      - name: Live journey (sign up → connect → insight → affordability → delete)
+        working-directory: mobile
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+          EXPO_PUBLIC_API_URL=http://localhost:8790 EXPO_PUBLIC_ELEVENLABS_AGENT_ID=off npx expo export --platform web --clear --output-dir dist-live
+          mkdir -p shots && node e2e/live.mjs dist-live shots
+
+      - name: Demo journey (sample data, no server)
+        working-directory: mobile
+        run: |
+          EXPO_PUBLIC_ELEVENLABS_AGENT_ID=off npx expo export --platform web --clear --output-dir dist
+          node e2e/journey.mjs dist shots
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: screenshots
+          path: mobile/shots

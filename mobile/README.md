@@ -1,10 +1,13 @@
-# BACI mobile — prototype
+# BACI mobile
 
-Expo (React Native) prototype of **BACI, the finance intelligence agent**. It is built from the BACI Design canvas, follows the flow contract in [`docs/design/BACI_FLOW_SPEC.md`](../docs/design/BACI_FLOW_SPEC.md), and has a built-in **ElevenLabs voice + text agent** in *Ask BACI*.
+Expo (React Native) app for **BACI, the finance intelligence agent**. It is built from the BACI Design canvas, follows the flow contract in [`docs/design/BACI_FLOW_SPEC.md`](../docs/design/BACI_FLOW_SPEC.md), and has a built-in **ElevenLabs voice + text agent** in *Ask BACI*.
 
 - Expo SDK 57 · React Native 0.86 · Expo Router · TypeScript
 - Runs on iOS and Android (development build) and in the browser (`expo start --web`)
-- Uses sandbox data only. Bank names are the fictional institutions from the design.
+- **Two modes:**
+  - **Live:** with `EXPO_PUBLIC_API_URL` set, people create an account and connect their real banks through Plaid. Data comes from the BACI API in [`server/`](../server/README.md).
+  - **Demo:** without it, or through **Explore with sample data**, everything runs on this device with the design's sandbox banks.
+- Taking it live, with every dependency, is covered in [`docs/LAUNCH.md`](../docs/LAUNCH.md).
 
 ## Run it
 
@@ -16,6 +19,8 @@ cp .env.example .env          # optional: the BACI agent is already the default
 npm run web                   # quickest: browser, voice works through the browser mic
 npx expo run:ios              # or run:android: development build with native voice
 ```
+
+**With real accounts and banks:** start the API (see [`server/README.md`](../server/README.md)), then run `EXPO_PUBLIC_API_URL=http://localhost:8080 npm run web`. On a phone, use your computer's LAN IP instead of `localhost`.
 
 Voice on a phone needs a **development build**. It won't run in Expo Go, because the ElevenLabs React Native SDK uses LiveKit's native WebRTC. `npx expo run:ios|android` builds one locally. `npx eas-cli@latest build --profile development` builds one in the cloud. The config plugins (`@livekit/react-native-expo-plugin` and `@config-plugins/react-native-webrtc`) plus the microphone permissions are already in `app.json`.
 
@@ -96,28 +101,13 @@ In the deployed web app, voice works through the browser's microphone over HTTPS
 
 ## Real banks (Plaid)
 
-The bank picker can list real banks from [Plaid](https://plaid.com)'s institution directory, with their logos and brand colours.
-- **Set up:**
-  1. Sign up at https://dashboard.plaid.com/signup. The free sandbox is enough.
-  2. Under **Developers → Keys**, copy your `client_id` and **Sandbox** secret.
-  3. Add them as repository secrets `PLAID_CLIENT_ID` and `PLAID_SECRET`.
-  4. On the next deploy, `scripts/fetch-banks.mjs` writes the list to `src/data/banks.generated.json`.
-- **Country:** the default is GB. Set a repository variable `BANKS_COUNTRY` (for example `IE`, `FR` or `US`) for another country.
-- **Production keys:** to use a Production secret, set `PLAID_ENV=production`.
-- **Locally:** run `PLAID_CLIENT_ID=… PLAID_SECRET=… npm run banks [country]`.
-- **Secret safety:** the secret is only used at build time and never ships in the app. Logos are bundled as images, so they also work offline.
-- **What's real:** bank names, logos and brand colours. Signing in and approving is still simulated: approving a real bank shows sample accounts. Linking real accounts needs a server that holds the Plaid secret and runs Plaid Link, which GitHub Pages can't host.
-- **Without the secrets:** the picker shows the fictional sandbox banks from the design (Meridian, Harbour…). Sample data always uses those.
+In live mode, **Choose your bank** opens Plaid Link, which lists every supported UK bank with its logo. The person approves read-only access in their bank's app (Open Banking app-to-app) or on its website, then comes back to choose which accounts BACI can use (04c → 05b).
+- **Plaid Link:** iOS and Android use Plaid's native SDK (`react-native-plaid-link-sdk`), which needs a development build, like voice does. Web uses Link JS. A bank's OAuth return lands on `/oauth`, which finishes the session.
+- **Reconnect (E3):** opens Link in update mode, so the person confirms access at their bank again.
+- **The server:** exchanges the token, encrypts it, imports up to 12 months of transactions, and detects bills, income, everyday spending and duplicate subscriptions. New transactions arrive by Plaid webhook.
+- **Testing:** with `ALLOW_SANDBOX_SHORTCUT=true` on a sandbox server, **Use Plaid's test bank (sandbox)** connects without the Link UI.
 
-## Connecting through the bank's app
-
-UK Open Banking lets people approve access in their bank's own app (app-to-app) instead of typing a login. BACI's connect flow (04a → 04b) does this by default.
-1. **04a:** the main button is **Open the {Bank} app**. **Use {Bank}'s website instead** is the fallback for people without the app.
-2. **04b, via the app:** BACI hands off ("Opening {Bank}…"), the bank's app unlocks with Face ID, the person approves, and the bank app sends them back ("Returning to BACI…").
-3. **04b, via the website:** the bank's hosted pages open in a browser sheet (with its address bar). The person signs in and approves.
-4. **Reconnect (E3):** this also opens the bank's app.
-
-In this prototype the bank app and website are simulated. With Plaid in production, the app-to-app flow comes from Plaid Link's OAuth support: register a redirect URI (an iOS universal link or Android app link) for BACI in the Plaid dashboard, pass it to Link, and the bank's app returns to BACI through it. That needs the Link token to be created on a server, so it can't run from GitHub Pages.
+**Demo mode** keeps the simulated journey: the picker of sandbox banks (or Plaid's directory baked in by `npm run banks`), the "Opening {Bank}…" handoff, the bank app with Face ID, and the website fallback.
 
 ## Design system
 
@@ -134,7 +124,7 @@ BACI uses dark navy glass, after the Revolut onboarding and Conceptzilla banking
 | **Shape** | `radius`: `sm` 10, `md` 14 (banners, inputs), `lg` 20 (cards), `sheet` 28 (dialogs), `pill` (buttons and chips). Spacing in `space` (4/8/12/16/24). |
 | **Orb** | The blue glass orb is BACI's avatar and voice indicator (see below). |
 
-The simulated bank sign-in page (04b) is the exception: it stays white in the bank's own colours, because it stands in for the bank's site, not BACI's.
+The demo's simulated bank sign-in page (04b) is the exception: it stays white in the bank's own colours, because it stands in for the bank's site, not BACI's.
 
 ## The orb
 
@@ -192,7 +182,7 @@ npm i -D playwright && node e2e/journey.mjs   # spec §6 acceptance walk-through
 
 ## Known gaps
 
-- **Data doesn't persist:** everything is in memory, so reloading the app starts over.
-- **No real Open Banking:** spec §5.5–5.7 (Open Banking adapter, Postgres and KMS, identity provider) belong to the backend and aren't part of this prototype.
-- **05a sync isn't in the background yet:** it runs in the foreground with the "carry on" hint (spec §5.1).
+- **Demo mode doesn't persist:** sample data lives in memory, so reloading starts over. Live mode is stored on the server.
+- **Not built yet:** password reset (needs an email provider) and multi-factor sign-in. See `docs/LAUNCH.md` § Known limits.
+- **05a sync isn't in the background yet:** it runs in the foreground. Afterwards, new transactions arrive by webhook and appear the next time the app opens.
 - **Unreconciled design:** like the design itself, the screens haven't been checked against Figma. The PRD/FRD weren't available here, so where the spec and the FRD might disagree, the spec was followed.

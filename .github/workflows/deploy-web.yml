@@ -57,6 +57,10 @@ jobs:
           EXPO_BASE_URL: /${{ github.event.repository.name }}
           # The agent is on by default; set a repository variable to point at another agent.
           EXPO_PUBLIC_ELEVENLABS_AGENT_ID: ${{ vars.ELEVENLABS_AGENT_ID }}
+          # The BACI API (server/). Set the repository variable BACI_API_URL, e.g. https://baci-api.onrender.com,
+          # to turn on accounts and real bank connections. Unset: the site runs on sample data only.
+          EXPO_PUBLIC_API_URL: ${{ vars.BACI_API_URL }}
+          EXPO_PUBLIC_SANDBOX: ${{ vars.BACI_API_URL && '0' || '' }}
 
       - name: Single-page app fallback
         # GitHub Pages serves 404.html for unknown paths, so deep links still load the app.
