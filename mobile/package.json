@@ -40,7 +40,8 @@
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
     "token-server": "node server/token-server.mjs",
-    "configure-agent": "node scripts/configure-agent.mjs"
+    "configure-agent": "node scripts/configure-agent.mjs",
+    "banks": "node scripts/fetch-banks.mjs"
   },
   "private": true
 }

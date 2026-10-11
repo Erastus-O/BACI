@@ -6,6 +6,9 @@ name: Deploy web app
 # If the ELEVENLABS_API_KEY repository secret is set, it also turns on what the app needs
 # from the agent (client tools, "Text only" override, website allowlist, BACI's rules);
 # see mobile/scripts/configure-agent.mjs. Without the secret that job is skipped.
+#
+# If GOCARDLESS_SECRET_ID and GOCARDLESS_SECRET_KEY are set, the bank picker lists real banks
+# with their logos from GoCardless Bank Account Data (mobile/scripts/fetch-banks.mjs).
 on:
   push:
     branches: [main]
@@ -34,6 +37,14 @@ jobs:
           cache-dependency-path: mobile/package-lock.json
 
       - run: npm ci
+
+      - name: Fetch the real bank list from GoCardless
+        # Names and logos for the bank picker. Skipped (sandbox banks shown) without the secrets.
+        run: npm run banks
+        env:
+          GOCARDLESS_SECRET_ID: ${{ secrets.GOCARDLESS_SECRET_ID }}
+          GOCARDLESS_SECRET_KEY: ${{ secrets.GOCARDLESS_SECRET_KEY }}
+          BANKS_COUNTRY: ${{ vars.BANKS_COUNTRY }}
 
       - name: Typecheck
         run: npx tsc --noEmit

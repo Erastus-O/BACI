@@ -46,7 +46,7 @@ export default function ConnectDone() {
       <View style={{ paddingTop: 56 }}>{flow === 'onboarding' ? <StepBar step={4} /> : null}</View>
       {!s.partial ? (
         <Row>
-          <BankMark initial={bank.initial} colour={bank.brandColour} size={48} />
+          <BankMark initial={bank.initial} colour={bank.brandColour} logo={bank.logo} size={48} />
           <Badge tone="success" icon="check" label="Up to date" />
         </Row>
       ) : null}

@@ -2,7 +2,7 @@ import { Text, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { BackButton, BankMark, Body, Button, Card, Display, Divider, ErrorBanner, Eyebrow, Muted, Row, Screen, Stack } from '../../../components/ui';
 import { Icon } from '../../../components/Icon';
-import { institutions } from '../../../data/mock';
+import { findInstitution, pickerInstitutions } from '../../../data/banks';
 import { pickerPath, useFlow } from '../../../features/flow';
 import { postConnection } from '../../../services/api';
 import { useMutation } from '../../../services/useQuery';
@@ -12,7 +12,7 @@ import { colors, fonts } from '../../../theme';
 export default function ConnectBefore() {
   const { institutionId } = useLocalSearchParams<{ institutionId: string }>();
   const flow = useFlow();
-  const bank = institutions.find((i) => i.id === institutionId) ?? institutions[0];
+  const bank = findInstitution(institutionId) ?? pickerInstitutions[0];
   const start = useMutation(postConnection);
 
   return (
@@ -43,7 +43,7 @@ export default function ConnectBefore() {
             <View key={i} style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: colors.control }} />
           ))}
         </Row>
-        <BankMark initial={bank.initial} colour={bank.brandColour} size={56} />
+        <BankMark initial={bank.initial} colour={bank.brandColour} logo={bank.logo} size={56} />
       </Row>
       <Stack gap={6}>
         <Display accessibilityRole="header" style={{ fontSize: 26, lineHeight: 31, textAlign: 'center' }}>
@@ -64,7 +64,7 @@ export default function ConnectBefore() {
       <Row gap={10} style={{ alignItems: 'flex-start' }}>
         <Icon name="clock" size={18} color={colors.inkSoft} />
         <Body style={{ flex: 1, fontSize: 13.5, lineHeight: 19, color: colors.inkSoft }}>
-          Access lasts 90 days, then we'll ask you to reconfirm. You can disconnect any time in Accounts. Connection provided by [OPEN BANKING PROVIDER], authorised by the FCA.
+          Access lasts 90 days, then we'll ask you to reconfirm. You can disconnect any time in Accounts. Connection provided by {bank.real ? 'GoCardless' : '[OPEN BANKING PROVIDER]'}, authorised by the FCA.
         </Body>
       </Row>
     </Screen>

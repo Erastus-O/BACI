@@ -7,6 +7,11 @@ export type Institution = {
   /** The bank's own colour, used on its (simulated) sign-in page — never BACI's. */
   brandColour: string;
   types: string;
+  /** Logo URL (real banks from GoCardless). */
+  logo?: string;
+  bic?: string;
+  /** A real bank from the GoCardless directory, rather than a sandbox bank. */
+  real?: boolean;
 };
 
 export const institutions: Institution[] = [

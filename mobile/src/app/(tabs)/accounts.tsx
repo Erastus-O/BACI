@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { router } from 'expo-router';
-import { Banner, Button, Card, Display, ErrorBanner, H1, Loading, Muted, Row, Screen, Strong, Toggle } from '../../components/ui';
+import { BankMark, Banner, Button, Card, Display, ErrorBanner, H1, Loading, Muted, Row, Screen, Strong, Toggle } from '../../components/ui';
 import { ConnectionStatusBadge } from '../../features/ConnectionStatusBadge';
 import { DisconnectDialog } from '../../features/DisconnectDialog';
 import { sandboxEnabled } from '../../features/sandbox';
@@ -58,6 +58,7 @@ function ConnectionCard({ conn, onDisconnect }: { conn: ConnectionView; onDiscon
   return (
     <Card style={{ paddingVertical: 14, gap: 10 }}>
       <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <BankMark initial={conn.institution.initial} colour={conn.institution.brandColour} logo={conn.institution.logo} size={40} />
         <View style={{ flex: 1 }}>
           <Display style={{ fontSize: 18 }}>{conn.institution.name}</Display>
           <Muted style={{ fontSize: 12.5 }}>Last successful sync {conn.lastSuccessfulSync ?? '—'}</Muted>

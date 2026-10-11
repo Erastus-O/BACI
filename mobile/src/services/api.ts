@@ -19,9 +19,9 @@ import {
   consentCategories,
   forecast,
   Institution,
-  institutions,
   sandboxAccounts,
 } from '../data/mock';
+import { accountsFor, findInstitution, pickerInstitutions } from '../data/banks';
 
 // ---------- Types ----------
 
@@ -169,7 +169,7 @@ function requireConsent(category?: ConsentCategory) {
 const allowed = (c: ConsentCategory) => Boolean(state.consent?.permissions[c]);
 
 const institution = (id: string): Institution => {
-  const i = institutions.find((x) => x.id === id);
+  const i = findInstitution(id);
   if (!i) throw new ApiError('not_found', 'Unknown institution');
   return i;
 };
@@ -273,7 +273,7 @@ export async function putProfile(input: ProfileInput) {
 
 export async function getInstitutions() {
   await latency(180);
-  return clone(institutions);
+  return clone(pickerInstitutions);
 }
 
 export type ConnectionView = Connection & {
@@ -335,7 +335,7 @@ export async function authorise(id: string, approved: boolean, sandbox?: Sandbox
   const existingProviderIds = new Map(
     state.accounts.filter((a) => a.connectionId !== id).map((a) => [a.providerAccountId, institution(getConn(a.connectionId).institutionId).name]),
   );
-  const discovered: DiscoveredAccount[] = (sandboxAccounts[bank.id] ?? []).map((a) => ({
+  const discovered: DiscoveredAccount[] = accountsFor(bank.id).map((a) => ({
     providerAccountId: a.providerAccountId,
     name: a.name,
     mask: a.mask,
@@ -360,7 +360,7 @@ export async function selectAccounts(id: string, providerAccountIds: string[]) {
   requireConsent();
   const conn = getConn(id);
   if (!providerAccountIds.length) throw new ApiError('invalid', 'Select at least one account');
-  const source = sandboxAccounts[conn.institutionId] ?? [];
+  const source = accountsFor(conn.institutionId);
   const keep = state.accounts.filter((a) => a.connectionId !== id);
   const added: Account[] = source
     .filter((a) => providerAccountIds.includes(a.providerAccountId))
