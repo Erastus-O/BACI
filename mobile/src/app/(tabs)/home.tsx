@@ -21,10 +21,12 @@ export default function Home() {
 
   const header = (
     <Row gap={12} style={{ paddingTop: 8 }}>
-      <Orb size={52} state={orbState} interactive={false} />
+      <Orb size={44} state={orbState} interactive={false} />
       <Stack gap={2} style={{ flex: 1 }}>
         <Muted>Good to see you</Muted>
-        <H1>Your money, together</H1>
+        <H1 numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8} style={{ fontSize: 26, lineHeight: 31 }}>
+          Your money, together
+        </H1>
       </Stack>
     </Row>
   );
