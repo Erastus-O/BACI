@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Pressable, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
-import { Banner, BackButton, BankMark, Card, ErrorBanner, H1, Loading, Muted, Screen, Stack, StepBar, Strong } from '../components/ui';
+import { Banner, BackButton, BankMark, Body, Button, Card, Divider, ErrorBanner, Eyebrow, H1, Loading, Muted, Row, Screen, Stack, StepBar, Strong } from '../components/ui';
 import { Icon } from '../components/Icon';
-import { getConnections, getInstitutions } from '../services/api';
+import { getConnections, getInstitutions, peek } from '../services/api';
+import { useMutation } from '../services/useQuery';
+import { connectBank, connectSandboxBank } from './connectLive';
 import { useQuery } from '../services/useQuery';
 import { colors, fonts } from '../theme';
 import { Flow } from './flow';
@@ -14,6 +16,72 @@ const FIRST = 25;
 
 // 04 Connect a bank — /onboarding/connect (flow=onboarding), /accounts/add (flow=accounts)
 export function InstitutionPicker({ flow }: { flow: Flow }) {
+  return peek.mode() === 'live' ? <LiveConnect flow={flow} /> : <SandboxPicker flow={flow} />;
+}
+
+/** Live: Plaid Link lists every supported bank (with logos) and handles approval in the bank's app. */
+function LiveConnect({ flow }: { flow: Flow }) {
+  const conns = useQuery(getConnections);
+  const existing = (conns.data ?? []).filter((c) => c.status !== 'awaiting_authorisation');
+  const open = useMutation(() => connectBank(flow));
+  const sandbox = useMutation(() => connectSandboxBank(flow));
+  const busy = open.busy || sandbox.busy;
+
+  return (
+    <Screen
+      footer={
+        <>
+          <ErrorBanner error={open.error ?? sandbox.error} />
+          <Button label={open.busy ? 'Opening…' : 'Choose your bank'} icon="search" disabled={busy} onPress={() => open.run()} />
+          {peek.features().sandboxShortcut ? (
+            <Button label={sandbox.busy ? 'Connecting…' : 'Use Plaid’s test bank (sandbox)'} variant="secondary" size="md" disabled={busy} onPress={() => sandbox.run()} />
+          ) : null}
+        </>
+      }
+    >
+      <Stack gap={12}>
+        <BackButton onPress={() => (router.canGoBack() ? router.back() : router.replace(flow === 'accounts' ? '/accounts' : '/onboarding/profile'))} />
+        {flow === 'onboarding' ? <StepBar step={4} /> : null}
+      </Stack>
+      <Stack gap={6}>
+        <H1>{existing.length ? 'Connect another account' : 'Connect your first account'}</H1>
+        <Muted>
+          Find your bank, building society or card provider. You'll approve read-only access in your bank's app (or its website), then come straight back to choose which accounts BACI can use.
+        </Muted>
+        {existing.length ? (
+          <Muted style={{ fontSize: 13 }}>
+            {existing.length} connection{existing.length === 1 ? '' : 's'} already: {existing.map((c) => c.institution.name).join(', ')}
+          </Muted>
+        ) : null}
+      </Stack>
+      <Card style={{ gap: 12 }}>
+        <Eyebrow>BACI will be able to see</Eyebrow>
+        <Line ok text="Account names, types and last 4 digits" />
+        <Line ok text="Balances and up to 12 months of transactions" />
+        <Line ok text="Direct debits and standing orders" />
+        <Divider />
+        <Eyebrow>BACI can never</Eyebrow>
+        <Line text="See your bank password or login details" />
+        <Line text="Move money or make payments" />
+      </Card>
+      <Muted style={{ fontSize: 12.5 }}>
+        Secure connection by Plaid, authorised by the FCA to provide account information services. Access lasts 90 days, then your bank asks you to reconfirm. Disconnect any time in Accounts.
+      </Muted>
+    </Screen>
+  );
+}
+
+function Line({ ok, text }: { ok?: boolean; text: string }) {
+  return (
+    <Row gap={10} style={{ alignItems: 'flex-start' }}>
+      <Icon name={ok ? 'check' : 'close'} size={18} color={ok ? colors.successFg : colors.dangerFg} strokeWidth={2.2} />
+      <Body style={{ flex: 1, fontSize: 14.5 }}>{text}</Body>
+    </Row>
+  );
+}
+
+/** Demo: the sandbox banks (or the Plaid directory baked in at build time), with simulated approval. */
+function SandboxPicker({ flow }: { flow: Flow }) {
   const insts = useQuery(getInstitutions);
   const conns = useQuery(getConnections);
   const [query, setQuery] = useState('');
