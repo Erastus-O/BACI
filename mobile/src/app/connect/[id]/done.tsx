@@ -92,7 +92,7 @@ export default function ConnectDone() {
           <View style={{ flexDirection: 'row', gap: 8 }}>
             <Stat value={String(s.transactionCount)} label="transactions" />
             <Stat value={String(s.regularPayments)} label="regular payments" />
-            <Stat value={`${Math.round(s.historyDays / 30)} mo`} label="of history" />
+            <Stat value={`${Math.round(s.historyDays / 30)} ${Math.round(s.historyDays / 30) === 1 ? 'month' : 'months'}`} label="of history" />
           </View>
           {s.suggestions.length ? (
             <Banner tone="info">{`We noticed money going to ${joinOr(s.suggestions)} you haven't connected. Adding ${s.suggestions.length === 1 ? 'it' : 'them'} gives you more accurate answers.`}</Banner>
