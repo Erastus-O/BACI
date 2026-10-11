@@ -37,7 +37,7 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <DeviceFrame>
       <AgentChatProvider>
-        <StatusBar style="dark" />
+        <StatusBar style="light" />
         <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.ground } }}>
           <Stack.Screen name="(tabs)" options={{ gestureEnabled: false }} />
         </Stack>

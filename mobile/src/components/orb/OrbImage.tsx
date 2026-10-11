@@ -86,7 +86,7 @@ export function OrbImage({ size, state = 'idle', level, onPress, interactive = t
       {interactive ? (
         <Animated.View
           pointerEvents="none"
-          style={{ position: 'absolute', top: 0, left: 0, width: size, height: size, borderRadius: size / 2, borderWidth: 2, borderColor: 'rgba(200,245,215,0.9)', opacity: pulse, transform: [{ scale: pulse.interpolate({ inputRange: [0, 1], outputRange: [1.15, 0.8] }) }] }}
+          style={{ position: 'absolute', top: 0, left: 0, width: size, height: size, borderRadius: size / 2, borderWidth: 2, borderColor: 'rgba(200,222,255,0.9)', opacity: pulse, transform: [{ scale: pulse.interpolate({ inputRange: [0, 1], outputRange: [1.15, 0.8] }) }] }}
         />
       ) : null}
     </Animated.View>

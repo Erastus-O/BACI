@@ -27,7 +27,7 @@ export function DeviceFrame({ children }: { children: ReactNode }) {
   const scale = Math.min(1, (height - 48) / outerH, (width - 48) / outerW);
 
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#E6E2D9' }}>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#0A0C16' }}>
       {/* The transform also makes this the containing block for position:fixed (dialogs stay on the phone). */}
       <View
         style={{

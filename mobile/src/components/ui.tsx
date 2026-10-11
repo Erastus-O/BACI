@@ -16,13 +16,13 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { colors, fonts, glass, radius } from '../theme';
+import { colors, fonts, glass, radius, type } from '../theme';
 import { Icon, IconName } from './Icon';
 import { OrbImage } from './orb/OrbImage';
 
 const backdrop = require('../../assets/backdrop.jpg');
 
-/** The soft green gradient every screen sits on. */
+/** The deep navy gradient every screen sits on. */
 export function Backdrop({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) {
   return (
     <ImageBackground source={backdrop} resizeMode="cover" style={[{ flex: 1, backgroundColor: colors.ground }, style]}>
@@ -176,16 +176,16 @@ export function Button({
         style,
       ]}
     >
-      {icon ? <Icon name={icon} size={18} color={disabled ? colors.inkSoft : v.fg} strokeWidth={2} /> : null}
-      <Text style={[styles.buttonLabel, { color: disabled ? colors.inkSoft : v.fg, fontSize: size === 'lg' ? 16 : 14 }]}>{label}</Text>
+      {icon ? <Icon name={icon} size={18} color={disabled ? colors.muted : v.fg} strokeWidth={2} /> : null}
+      <Text style={[styles.buttonLabel, { color: disabled ? colors.muted : v.fg, fontSize: size === 'lg' ? 16 : 14 }]}>{label}</Text>
       {iconRight ? <Icon name={iconRight} size={18} color={v.fg} strokeWidth={2} /> : null}
     </Pressable>
   );
 }
 
 const buttonVariants: Record<ButtonVariant, { bg: string; pressed: string; fg: string; border?: string }> = {
-  primary: { bg: colors.primary, pressed: colors.primaryPressed, fg: '#FFFFFF' },
-  secondary: { bg: colors.surface, pressed: colors.sheet, fg: colors.ink, border: colors.glassEdge },
+  primary: { bg: colors.cta, pressed: colors.ctaPressed, fg: colors.onCta },
+  secondary: { bg: colors.surfaceRaised, pressed: 'rgba(255,255,255,0.18)', fg: colors.ink, border: colors.glassEdge },
   ghost: { bg: 'transparent', pressed: colors.hairline, fg: colors.primary },
   danger: { bg: 'transparent', pressed: colors.dangerBg, fg: colors.dangerFg },
 };
@@ -210,10 +210,10 @@ export function Chip({ label, selected, onPress }: { label: string; selected?: b
       accessibilityRole="button"
       accessibilityState={{ selected }}
       onPress={onPress}
-      style={[styles.chip, selected ? { backgroundColor: colors.primary, borderColor: colors.primary } : null]}
+      style={[styles.chip, selected ? { backgroundColor: colors.cta, borderColor: colors.cta } : null]}
     >
-      {selected ? <Icon name="check" size={16} color="#FFFFFF" strokeWidth={2.2} /> : null}
-      <Text style={{ fontFamily: fonts.body, fontSize: 15, color: selected ? '#FFFFFF' : colors.ink }}>{label}</Text>
+      {selected ? <Icon name="check" size={16} color={colors.onCta} strokeWidth={2.2} /> : null}
+      <Text style={{ fontFamily: selected ? fonts.semibold : fonts.body, fontSize: 15, color: selected ? colors.onCta : colors.ink }}>{label}</Text>
     </Pressable>
   );
 }
@@ -325,7 +325,7 @@ export function StepBar({ step, total = 5, label }: { step: number; total?: numb
         style={{ flexDirection: 'row', gap: 6 }}
       >
         {Array.from({ length: total }, (_, i) => (
-          <View key={i} style={{ flex: 1, height: 4, borderRadius: 4, backgroundColor: i < step ? colors.primary : colors.stepIdle }} />
+          <View key={i} style={{ flex: 1, height: 4, borderRadius: 4, backgroundColor: i < step ? colors.ink : colors.stepIdle }} />
         ))}
       </View>
       {label ? (
@@ -348,7 +348,7 @@ export function BankMark({ initial, colour, logo, size = 40 }: { initial: string
     );
   }
   return (
-    <View style={{ width: size, height: size, borderRadius: size * 0.3, backgroundColor: colour, alignItems: 'center', justifyContent: 'center' }}>
+    <View style={{ width: size, height: size, borderRadius: size * 0.3, backgroundColor: colour, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center' }}>
       <Text style={{ color: '#FFFFFF', fontFamily: fonts.bold, fontSize: size * 0.42 }}>{initial}</Text>
     </View>
   );
@@ -366,25 +366,25 @@ export const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: 'transparent' },
   screenBody: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 20, gap: 16 },
   footer: { paddingHorizontal: 16, paddingBottom: 12, paddingTop: 8, gap: 8, backgroundColor: 'transparent' },
-  card: { ...glass, borderRadius: 22, padding: 16, shadowColor: '#1E3A2B', shadowOpacity: 0.08, shadowRadius: 24, shadowOffset: { width: 0, height: 8 } },
-  h1: { fontFamily: fonts.display, fontSize: 28, lineHeight: 32, color: colors.ink },
-  display: { fontFamily: fonts.display, color: colors.ink },
-  body: { fontFamily: fonts.body, fontSize: 15, lineHeight: 21, color: colors.ink },
-  muted: { fontFamily: fonts.body, fontSize: 15, lineHeight: 21, color: colors.muted },
+  card: { ...glass, borderRadius: radius.lg, padding: 16, shadowColor: '#000', shadowOpacity: 0.25, shadowRadius: 24, shadowOffset: { width: 0, height: 10 } },
+  h1: { ...type.h1, color: colors.ink },
+  display: { fontFamily: fonts.display, letterSpacing: -0.3, color: colors.ink },
+  body: { ...type.body, color: colors.ink },
+  muted: { ...type.body, color: colors.muted },
   strong: { fontFamily: fonts.semibold, fontSize: 15, color: colors.ink },
-  eyebrow: { fontFamily: fonts.semibold, fontSize: 12.5, letterSpacing: 0.75, textTransform: 'uppercase', color: colors.muted },
+  eyebrow: { ...type.eyebrow, color: colors.muted },
   button: { borderRadius: radius.pill, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingHorizontal: 16 },
   buttonLg: { height: 52 },
   buttonMd: { height: 44 },
   buttonLabel: { fontFamily: fonts.semibold },
   back: { ...glass, width: 44, height: 44, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center' },
-  chip: { ...glass, minHeight: 44, paddingHorizontal: 18, borderRadius: radius.pill, borderColor: 'rgba(22,24,29,0.16)', flexDirection: 'row', alignItems: 'center', gap: 6 },
+  chip: { ...glass, minHeight: 44, paddingHorizontal: 18, borderRadius: radius.pill, borderColor: colors.chipLine, flexDirection: 'row', alignItems: 'center', gap: 6 },
   segmented: { flexDirection: 'row', gap: 4, backgroundColor: colors.hairline, borderRadius: 12, padding: 4 },
   segment: { flex: 1, height: 38, borderRadius: 9, alignItems: 'center', justifyContent: 'center' },
-  segmentOn: { backgroundColor: colors.surface, shadowColor: colors.ink, shadowOpacity: 0.08, shadowRadius: 2, shadowOffset: { width: 0, height: 1 }, elevation: 1 },
-  checkbox: { width: 22, height: 22, borderRadius: 6, borderWidth: 1.5, borderColor: colors.control, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' },
+  segmentOn: { backgroundColor: colors.surfaceRaised },
+  checkbox: { width: 22, height: 22, borderRadius: 6, borderWidth: 1.5, borderColor: colors.chipLine, backgroundColor: colors.hairline, alignItems: 'center', justifyContent: 'center' },
   badge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 3, paddingLeft: 7, paddingRight: 9, borderRadius: radius.pill, alignSelf: 'flex-start' },
-  banner: { flexDirection: 'row', gap: 10, alignItems: 'flex-start', paddingVertical: 12, paddingHorizontal: 14, borderRadius: 14, borderWidth: 1, borderColor: 'rgba(255,255,255,0.6)' },
+  banner: { flexDirection: 'row', gap: 10, alignItems: 'flex-start', paddingVertical: 12, paddingHorizontal: 14, borderRadius: radius.md, borderWidth: 1, borderColor: colors.hairline },
 });
 
 // ---------- States ----------
@@ -425,8 +425,8 @@ export function ErrorBanner({ error, onRetry }: { error: Error | null | undefine
 /** Modal confirmation (S3 Disconnect and friends). */
 export function Dialog({ visible, title, children, onRequestClose }: { visible: boolean; title: string; children: ReactNode; onRequestClose: () => void }) {
   const sheet = (
-    <View style={{ flex: 1, backgroundColor: 'rgba(22,40,30,0.32)', justifyContent: 'center', padding: 16 }}>
-      <View accessibilityViewIsModal aria-modal accessibilityLabel={title} role="dialog" style={{ ...glass, backgroundColor: colors.sheet, borderRadius: 28, padding: 24, gap: 14 }}>
+    <View style={{ flex: 1, backgroundColor: 'rgba(2,3,10,0.6)', justifyContent: 'center', padding: 16 }}>
+      <View accessibilityViewIsModal aria-modal accessibilityLabel={title} role="dialog" style={{ ...glass, backgroundColor: colors.sheet, borderRadius: radius.sheet, padding: 24, gap: 14 }}>
         <Display accessibilityRole="header" style={{ fontSize: 24, lineHeight: 29 }}>
           {title}
         </Display>

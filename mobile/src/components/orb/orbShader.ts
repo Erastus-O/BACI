@@ -1,4 +1,4 @@
-// BACI's orb: a glassy green sphere with dark smoke drifting inside.
+// BACI's orb: a glassy blue sphere with dark smoke drifting inside.
 // WebGL 1 (GLSL ES 1.0) so it runs on every browser. Used live on web (Orb.web.tsx) and
 // baked to assets/orb.png for iOS/Android (scripts/bake-orb.mjs).
 
@@ -81,8 +81,8 @@ void main() {
   vec2 q = uv / R;
   float r = length(q);
 
-  // Soft green glow around the sphere.
-  vec3 haloCol = vec3(0.58, 0.86, 0.66);
+  // Soft blue glow around the sphere.
+  vec3 haloCol = vec3(0.42, 0.60, 1.0);
   float halo = smoothstep(1.32, 0.98, r) * (0.22 + 0.45 * uEnergy + 0.35 * uPulse);
 
   if (r > 1.0) {
@@ -115,28 +115,28 @@ void main() {
   }
   smoke = clamp(smoke * 0.5 + sheet * 0.42, 0.0, 1.0);
 
-  // Glassy green body, lit from uLight.
+  // Glassy blue body, lit from uLight.
   vec3 L = normalize(vec3(uLight, 0.85));
   float diff = dot(n, L) * 0.5 + 0.5;
-  vec3 deep = vec3(0.11, 0.38, 0.27);
-  vec3 mid = vec3(0.24, 0.58, 0.42);
-  vec3 lite = vec3(0.46, 0.76, 0.58);
+  vec3 deep = vec3(0.07, 0.15, 0.48);
+  vec3 mid = vec3(0.18, 0.38, 0.86);
+  vec3 lite = vec3(0.50, 0.78, 1.0);
   vec3 col = mix(deep, mid, smoothstep(0.1, 0.8, diff));
   col = mix(col, lite, pow(diff, 4.0) * 0.6);
 
-  vec3 strandCol = vec3(0.04, 0.17, 0.12);
+  vec3 strandCol = vec3(0.02, 0.05, 0.20);
   col = mix(col, strandCol, smoke * 0.78);
 
-  // Fresnel rim with a hint of yellow-green, and a soft specular highlight.
+  // Fresnel rim with a hint of ice blue, and a soft specular highlight.
   float fres = pow(1.0 - z, 2.2);
-  col = mix(col, vec3(0.72, 0.90, 0.62), fres * 0.5);
+  col = mix(col, vec3(0.66, 0.90, 1.0), fres * 0.5);
   vec3 H = normalize(L + vec3(0.0, 0.0, 1.0));
   col += pow(max(dot(n, H), 0.0), 60.0) * 0.18;
-  col += vec3(0.70, 1.0, 0.80) * uEnergy * 0.10 * (1.0 - z);
+  col += vec3(0.70, 0.88, 1.0) * uEnergy * 0.10 * (1.0 - z);
 
   // Ripple after a tap.
   float ring = uPulse * smoothstep(0.12, 0.0, abs(r - (1.0 - uPulse)));
-  col += vec3(0.75, 1.0, 0.82) * ring * 0.5;
+  col += vec3(0.78, 0.92, 1.0) * ring * 0.5;
 
   // Glass: slightly see-through at the rim, crisp edge.
   float edge = smoothstep(1.0, 0.975, r);
