@@ -64,10 +64,11 @@ try {
   await shot('04-connect');
   ok('onboarding reached 04');
 
-  step('Lumen Card → 04a → 04b → Cancel → E1 → Choose a different provider; nothing connected');
+  step('Lumen Card → 04a → website fallback → Cancel → E1 → Choose a different provider; nothing connected');
   await click('Lumen Card');
-  await click('Continue to Lumen Card');
+  await click("Use Lumen Card's website instead");
   await see("You're in Lumen Card, not BACI");
+  await see('lumencard.co.uk');
   await click('Cancel and return to BACI');
   await see("Lumen Card wasn't connected");
   await see('Nothing was shared with BACI.');
@@ -76,14 +77,19 @@ try {
   await see('Connect your first account');
   ok('failed new connection was deleted');
 
-  step('Harbour → Approve → Found 2 → untick loan → Use 1 account → 05a → 05b nudge → Done → 06');
+  step('Harbour → bank app (handoff → Face ID → Approve → back to BACI) → Found 2 → untick loan → Use 1 account → 05a → 05b nudge → Done → 06');
   await click('Harbour Bank');
   await shot('04a-before');
-  await click('Continue to Harbour Bank');
-  await shot('04b-signin');
-  await click('Sign in');
-  await shot('04b-approve');
+  await click('Open the Harbour Bank app');
+  await see('Opening Harbour Bank…');
+  await shot('04b-handoff');
+  await see("You're in Harbour Bank, not BACI");
+  await shot('04b-app-unlock');
+  await click('Unlock with Face ID');
+  await see('Signed in with Face ID');
+  await shot('04b-app-approve');
   await click('Approve');
+  await see('Returning to BACI…');
   await see('Found 2 accounts');
   await shot('04c-found');
   await click('Review 2 accounts');
@@ -103,7 +109,7 @@ try {
   step('Add another → Northgate → Sandbox: one account fails → E2 → Continue with 1 account');
   await click('Add another account');
   await click('Northgate Building Society');
-  await click('Continue to Northgate Building Society');
+  await click("Use Northgate Building Society's website instead");
   await click('Sign in');
   await click('One account fails');
   await click('Approve');
@@ -144,7 +150,7 @@ try {
   await shot('10-afford-finance');
   ok('A2 asked before answering; card shows the monthly cost');
 
-  step('09: Simulate re-auth → Re-authenticate → E3 → Continue → 04b (bank colours) → Approve → 05a → 05b');
+  step('09: Simulate re-auth → Re-authenticate → E3 → bank app → Face ID → Approve → 05a → 05b');
   await visible(page.getByRole('tab', { name: /Accounts/ })).click().catch(() => click('Accounts'));
   await see('Last successful sync');
   await visible(page.getByRole('button', { name: 'Simulate Re-auth' })).click();
@@ -153,9 +159,9 @@ try {
   await click('Re-authenticate');
   await see('Reconfirm access to');
   await shot('E3-reconnect');
-  await visible(page.getByRole('button', { name: /^Continue to / })).click();
+  await visible(page.getByRole('button', { name: /^Open the .* app$/ })).click();
   await see('not BACI');
-  await click('Sign in');
+  await click('Unlock with Face ID');
   await click('Approve');
   await see('is connected', { timeout: 15000 });
   await shot('05b-after-reauth');

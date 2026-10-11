@@ -32,10 +32,11 @@ export default function Reconnect() {
         <>
           <ErrorBanner error={start.error} />
           <Button
-            label={start.busy ? 'Opening…' : `Continue to ${bank.name}`}
+            label={start.busy ? 'Opening…' : `Open the ${bank.name} app`}
+            icon="phone"
             disabled={start.busy}
             onPress={async () => {
-              if ((await start.run(c.id)).ok) router.push({ pathname: '/connect/authorise/[connectionId]', params: { connectionId: c.id, flow: 'accounts' } });
+              if ((await start.run(c.id)).ok) router.push({ pathname: '/connect/authorise/[connectionId]', params: { connectionId: c.id, flow: 'accounts', via: 'app' } });
             }}
           />
           <Button label="Not now" variant="ghost" size="md" onPress={() => router.replace('/accounts')} />

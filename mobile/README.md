@@ -109,6 +109,16 @@ The bank picker can list real banks from [Plaid](https://plaid.com)'s institutio
 - **What's real:** bank names, logos and brand colours. Signing in and approving is still simulated: approving a real bank shows sample accounts. Linking real accounts needs a server that holds the Plaid secret and runs Plaid Link, which GitHub Pages can't host.
 - **Without the secrets:** the picker shows the fictional sandbox banks from the design (Meridian, Harbour…). Sample data always uses those.
 
+## Connecting through the bank's app
+
+UK Open Banking lets people approve access in their bank's own app (app-to-app) instead of typing a login. BACI's connect flow (04a → 04b) does this by default.
+1. **04a:** the main button is **Open the {Bank} app**. **Use {Bank}'s website instead** is the fallback for people without the app.
+2. **04b, via the app:** BACI hands off ("Opening {Bank}…"), the bank's app unlocks with Face ID, the person approves, and the bank app sends them back ("Returning to BACI…").
+3. **04b, via the website:** the bank's hosted pages open in a browser sheet (with its address bar). The person signs in and approves.
+4. **Reconnect (E3):** this also opens the bank's app.
+
+In this prototype the bank app and website are simulated. With Plaid in production, the app-to-app flow comes from Plaid Link's OAuth support: register a redirect URI (an iOS universal link or Android app link) for BACI in the Plaid dashboard, pass it to Link, and the bank's app returns to BACI through it. That needs the Link token to be created on a server, so it can't run from GitHub Pages.
+
 ## Design system
 
 BACI uses dark navy glass, after the Revolut onboarding and Conceptzilla banking references. All tokens live in `src/theme.ts`; shared components in `src/components/ui.tsx` use them, so change the look there, not in screens.
