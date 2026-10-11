@@ -2,7 +2,7 @@ import { Text, useWindowDimensions, View } from 'react-native';
 import { router } from 'expo-router';
 import { Button, Card, ErrorBanner, Muted, Screen, StepBar } from '../components/ui';
 import { Orb } from '../components/orb/Orb';
-import { loadSampleData, patchOnboarding } from '../services/api';
+import { liveAvailable, loadSampleData, patchOnboarding } from '../services/api';
 import { useMutation } from '../services/useQuery';
 import { colors, fonts } from '../theme';
 
@@ -29,9 +29,12 @@ export default function Intro() {
             label={start.busy ? 'Starting…' : 'Get started'}
             disabled={start.busy}
             onPress={async () => {
-              if ((await start.run('consent')).ok) router.push('/onboarding/consent');
+              // With a server, your data lives in your own account; otherwise the prototype runs on this device.
+              if (liveAvailable) router.push('/auth');
+              else if ((await start.run('consent')).ok) router.push('/onboarding/consent');
             }}
           />
+          {liveAvailable ? <Button label="I already have an account" variant="secondary" size="md" onPress={() => router.push({ pathname: '/auth', params: { mode: 'signin' } })} /> : null}
           <Button
             label="Explore with sample data"
             variant="ghost"

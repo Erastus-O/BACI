@@ -86,6 +86,9 @@ export default function ConnectDone() {
         </Banner>
       ) : (
         <>
+          {s.importing || s.transactionCount === 0 ? (
+            <Banner tone="info">Your bank is still sending your transaction history. It usually takes a minute or two — bills, income and insights will appear as soon as it arrives.</Banner>
+          ) : null}
           <View style={{ flexDirection: 'row', gap: 8 }}>
             <Stat value={String(s.transactionCount)} label="transactions" />
             <Stat value={String(s.regularPayments)} label="regular payments" />

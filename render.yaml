@@ -1,0 +1,45 @@
+# Render blueprint for the BACI API (https://render.com/docs/blueprint-spec).
+# Render → New → Blueprint → pick this repo. Then fill in the variables marked sync: false.
+# Database: use a permanent Postgres (Neon free tier, or Render's paid Postgres) for DATABASE_URL.
+services:
+  - type: web
+    name: baci-api
+    runtime: node
+    rootDir: server
+    plan: starter # free instances sleep after 15 minutes and drop Plaid webhooks while asleep
+    region: frankfurt
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DATABASE_URL
+        sync: false
+      - key: ENCRYPTION_KEY # openssl rand -base64 32 — keep a copy somewhere safe
+        sync: false
+      - key: CORS_ORIGINS
+        value: https://erastus-o.github.io,http://localhost:8081
+      - key: PLAID_CLIENT_ID
+        sync: false
+      - key: PLAID_SECRET
+        sync: false
+      - key: PLAID_ENV
+        value: sandbox
+      - key: PLAID_COUNTRY_CODES
+        value: GB
+      - key: PLAID_REDIRECT_URI_WEB
+        value: https://erastus-o.github.io/BACI/oauth
+      - key: PLAID_REDIRECT_URI_IOS
+        sync: false
+      - key: PLAID_ANDROID_PACKAGE
+        value: com.baci.app
+      - key: PLAID_WEBHOOK_URL
+        sync: false
+      - key: ALLOW_SANDBOX_SHORTCUT
+        value: "false"
+      - key: ELEVENLABS_API_KEY
+        sync: false
+      - key: ELEVENLABS_AGENT_ID
+        sync: false

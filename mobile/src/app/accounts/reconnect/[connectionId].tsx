@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { Badge, BackButton, BankMark, Body, Button, Card, ErrorBanner, H1, Loading, Muted, Row, Screen, Stack } from '../../../components/ui';
 import { DisconnectDialog } from '../../../features/DisconnectDialog';
+import { reconnectBank } from '../../../features/connectLive';
 import { getConnection, peek, reauthorise } from '../../../services/api';
 import { useMutation, useQuery } from '../../../services/useQuery';
 
@@ -11,6 +12,8 @@ export default function Reconnect() {
   const { connectionId } = useLocalSearchParams<{ connectionId: string }>();
   const conn = useQuery(() => getConnection(connectionId), [connectionId]);
   const start = useMutation(reauthorise);
+  // Live: Plaid Link in update mode, so the person confirms access in their bank's app.
+  const relink = useMutation(reconnectBank);
   const [confirm, setConfirm] = useState(false);
 
   if (!peek.hasConsent()) return <Redirect href="/home" />;
@@ -30,12 +33,16 @@ export default function Reconnect() {
     <Screen
       footer={
         <>
-          <ErrorBanner error={start.error} />
+          <ErrorBanner error={start.error ?? relink.error} />
           <Button
-            label={start.busy ? 'Opening…' : `Open the ${bank.name} app`}
+            label={start.busy || relink.busy ? 'Opening…' : `Open the ${bank.name} app`}
             icon="phone"
-            disabled={start.busy}
+            disabled={start.busy || relink.busy}
             onPress={async () => {
+              if (peek.mode() === 'live') {
+                await relink.run(c.id);
+                return;
+              }
               if ((await start.run(c.id)).ok) router.push({ pathname: '/connect/authorise/[connectionId]', params: { connectionId: c.id, flow: 'accounts', via: 'app' } });
             }}
           />

@@ -1,0 +1,28 @@
+{
+  "name": "baci-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "BACI API: accounts, consent, Plaid bank connections and the data behind the app.",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "dev": "tsx watch src/index.ts",
+    "migrate": "tsx src/migrate.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test test/*.test.ts"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.1.4",
+    "hono": "^4.13.13",
+    "pg": "^8.23.1",
+    "tsx": "^4.23.15"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "@types/pg": "^8.23.1",
+    "typescript": "~6.0.3"
+  }
+}

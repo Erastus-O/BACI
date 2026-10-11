@@ -7,7 +7,7 @@ import { DisconnectDialog } from '../../features/DisconnectDialog';
 import { sandboxEnabled } from '../../features/sandbox';
 import { kindLabel } from '../../data/mock';
 import { money } from '../../lib/format';
-import { ConnectionView, getConnections, patchAccount, simulate, sync } from '../../services/api';
+import { ConnectionView, getConnections, patchAccount, peek, simulate, sync } from '../../services/api';
 import { useMutation, useQuery } from '../../services/useQuery';
 import { colors, fonts } from '../../theme';
 
@@ -97,7 +97,7 @@ function ConnectionCard({ conn, onDisconnect }: { conn: ConnectionView; onDiscon
         )}
         <Button label="Disconnect" size="md" variant="danger" onPress={onDisconnect} />
       </Row>
-      {sandboxEnabled ? <Simulate id={conn.id} /> : null}
+      {sandboxEnabled && peek.mode() === 'demo' ? <Simulate id={conn.id} /> : null}
     </Card>
   );
 }

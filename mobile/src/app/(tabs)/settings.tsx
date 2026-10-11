@@ -1,14 +1,15 @@
+import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { router } from 'expo-router';
-import { Badge, Button, Card, Display, H1, Muted, Row, Screen, Stack, Strong, Toggle } from '../../components/ui';
+import { Badge, Body, Button, Card, Dialog, Display, ErrorBanner, H1, Muted, Row, Screen, Stack, Strong, Toggle } from '../../components/ui';
 import { Icon, IconName } from '../../components/Icon';
 import { agentConfig, isAgentConfigured } from '../../agent/config';
 import { useAgentChat } from '../../agent/AgentChat';
 import { sandboxEnabled } from '../../features/sandbox';
 import { consentCategories } from '../../data/mock';
 import { money } from '../../lib/format';
-import { getConnections, getConsent, getProfile, getSnapshot, peek, resetAll, setSimulateDataOutage } from '../../services/api';
-import { useQuery } from '../../services/useQuery';
+import { deleteAccount, getConnections, getConsent, getProfile, getSnapshot, peek, resetAll, setSimulateDataOutage, signOut } from '../../services/api';
+import { useMutation, useQuery } from '../../services/useQuery';
 import { colors } from '../../theme';
 
 // S1 Settings — /settings
@@ -80,10 +81,57 @@ export default function Settings() {
         </Muted>
       </Card>
 
-      {sandboxEnabled ? <DevPanel onReset={reset} /> : null}
+      {peek.mode() === 'live' ? <AccountCard onLeave={reset} /> : null}
+      {sandboxEnabled && peek.mode() === 'demo' ? <DevPanel onReset={reset} /> : null}
 
       <Muted style={{ fontSize: 12.5 }}>BACI provides information, not regulated financial advice.</Muted>
     </Screen>
+  );
+}
+
+/** Live: who is signed in; sign out; delete the account and every piece of data (UK GDPR). */
+function AccountCard({ onLeave }: { onLeave: () => void }) {
+  const [confirm, setConfirm] = useState(false);
+  const out = useMutation(signOut);
+  const del = useMutation(deleteAccount);
+  return (
+    <Card style={{ gap: 10 }}>
+      <Display style={{ fontSize: 19 }}>Your account</Display>
+      <Muted style={{ fontSize: 13.5 }}>Signed in as {peek.user()?.email}</Muted>
+      <ErrorBanner error={out.error ?? del.error} />
+      <Row gap={8} style={{ flexWrap: 'wrap' }}>
+        <Button
+          label="Sign out"
+          variant="secondary"
+          size="md"
+          disabled={out.busy}
+          onPress={async () => {
+            onLeave();
+            await out.run();
+            router.replace('/welcome');
+          }}
+        />
+        <Button label="Delete account" variant="danger" size="md" onPress={() => setConfirm(true)} />
+      </Row>
+      <Dialog visible={confirm} title="Delete your BACI account?" onRequestClose={() => setConfirm(false)}>
+        <Body>
+          This removes your account, consent record, profile, and every bank connection and transaction BACI holds. BACI's access at each bank is revoked too. It can't be undone.
+        </Body>
+        <Button
+          label={del.busy ? 'Deleting…' : 'Delete everything'}
+          variant="danger"
+          disabled={del.busy}
+          onPress={async () => {
+            onLeave();
+            if ((await del.run()).ok) {
+              setConfirm(false);
+              router.replace('/welcome');
+            }
+          }}
+        />
+        <Button label="Keep my account" variant="secondary" onPress={() => setConfirm(false)} />
+      </Dialog>
+    </Card>
   );
 }
 
