@@ -60,7 +60,7 @@ try {
   await see('a little about you');
   await shot('03-profile');
   await click('Skip for now');
-  await see('Connect your first account');
+  await see('Connect your account');
   await shot('04-connect');
   ok('onboarding reached 04');
 
@@ -74,7 +74,7 @@ try {
   await see('Nothing was shared with BACI.');
   await shot('E1-cancelled');
   await click('Choose a different provider');
-  await see('Connect your first account');
+  await see('Connect your account');
   ok('failed new connection was deleted');
 
   step('Harbour → bank app (handoff → Face ID → Approve → back to BACI) → Found 2 → untick loan → Use 1 account → 05a → 05b nudge → Done → 06');

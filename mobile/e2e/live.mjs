@@ -94,7 +94,7 @@ try {
   await click('Agree and continue');
   await see('a little about you');
   await click('Skip for now');
-  await see('Connect your first account');
+  await see('Connect your account');
   await see('Secure connection by Plaid');
   await shot('02-connect');
   ok('live connect screen');
