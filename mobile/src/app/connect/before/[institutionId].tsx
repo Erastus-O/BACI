@@ -62,7 +62,7 @@ export default function ConnectBefore() {
       <Row gap={10} style={{ alignItems: 'flex-start' }}>
         <Icon name="clock" size={18} color={colors.inkSoft} />
         <Body style={{ flex: 1, fontSize: 13.5, lineHeight: 19, color: colors.inkSoft }}>
-          Access lasts 90 days, then we'll ask you to reconfirm. You can disconnect any time in Accounts. Connection provided by {bank.real ? 'Plaid' : '[OPEN BANKING PROVIDER]'}, authorised by the FCA.
+          Access lasts 90 days, then we'll ask you to reconfirm.
         </Body>
       </Row>
     </Screen>
