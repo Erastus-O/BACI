@@ -40,6 +40,7 @@ All routes except auth, `/health` and the webhook need `Authorization: Bearer <t
 | --- | --- |
 | `POST /v1/auth/signup` · `POST /v1/auth/login` · `POST /v1/auth/logout` | Accounts and sessions |
 | `GET /v1/state` | Everything the app shows |
+| `GET /v1/transactions` | Transactions on the selected accounts (last ~13 months) for Analytics; needs "Transaction history" consent |
 | `PATCH /v1/onboarding` · `PUT`/`DELETE /v1/consent` · `PUT /v1/profile` | Onboarding, consent (logged in `consent_events`), profile |
 | `POST /v1/plaid/link-token` | Plaid Link token: new connection, or update mode with `connectionId` |
 | `POST /v1/plaid/exchange` | Public token → encrypted access token, institution, accounts |

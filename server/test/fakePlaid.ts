@@ -11,10 +11,10 @@ const iso = (t: number) => new Date(t).toISOString().slice(0, 10);
 /** ~4 months of believable UK current-account and card activity, ending today. */
 export function sampleTransactions(today = new Date()) {
   const t0 = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate());
-  const txs: { transaction_id: string; account_id: string; amount: number; date: string; name: string; merchant_name: string | null; pending: boolean; personal_finance_category: { primary: string } }[] = [];
+  const txs: { transaction_id: string; account_id: string; amount: number; date: string; name: string; merchant_name: string | null; pending: boolean; payment_channel: string; personal_finance_category: { primary: string; detailed: string } }[] = [];
   let n = 0;
-  const add = (account: string, daysAgo: number, amount: number, name: string, merchant: string | null, cat: string) =>
-    txs.push({ transaction_id: `tx_${++n}`, account_id: account, amount, date: iso(t0 - daysAgo * DAY), name, merchant_name: merchant, pending: false, personal_finance_category: { primary: cat } });
+  const add = (account: string, daysAgo: number, amount: number, name: string, merchant: string | null, cat: string, detailed = `${cat}_OTHER`, channel = 'other') =>
+    txs.push({ transaction_id: `tx_${++n}`, account_id: account, amount, date: iso(t0 - daysAgo * DAY), name, merchant_name: merchant, pending: false, payment_channel: channel, personal_finance_category: { primary: cat, detailed } });
   const monthly = (dom: number, fn: (daysAgo: number) => void) => {
     for (let m = 0; m < 4; m++) {
       const d = new Date(t0);
@@ -25,14 +25,14 @@ export function sampleTransactions(today = new Date()) {
       if (ago >= 0 && ago < 120) fn(ago);
     }
   };
-  monthly(25, (a) => add('acc_current', a, -2650, 'ACME LTD SALARY', 'Acme Ltd', 'INCOME'));
-  monthly(1, (a) => add('acc_current', a, 950, 'LANDLORD RENT SO', null, 'RENT_AND_UTILITIES'));
-  monthly(5, (a) => add('acc_current', a, 152, 'COUNCIL TAX DD', 'Lambeth Council', 'GOVERNMENT_AND_NON_PROFIT'));
-  monthly(12, (a) => add('acc_current', a, 10.99, 'NETFLIX.COM', 'Netflix', 'ENTERTAINMENT'));
-  monthly(18, (a) => add('acc_card', a, 10.99, 'NETFLIX.COM', 'Netflix', 'ENTERTAINMENT'));
-  monthly(20, (a) => add('acc_current', a, 185, 'ZOPA LOAN REPAYMENT', 'Zopa', 'LOAN_PAYMENTS'));
-  for (let d = 2; d < 118; d += 3) add('acc_current', d, 18 + ((d * 7) % 23), 'TESCO STORES 3021', 'Tesco', 'FOOD_AND_DRINK');
-  for (let d = 4; d < 118; d += 9) add('acc_card', d, 24 + ((d * 5) % 31), 'PRET A MANGER', 'Pret A Manger', 'FOOD_AND_DRINK');
+  monthly(25, (a) => add('acc_current', a, -2650, 'ACME LTD SALARY', 'Acme Ltd', 'INCOME', 'INCOME_WAGES'));
+  monthly(1, (a) => add('acc_current', a, 950, 'LANDLORD RENT SO', null, 'RENT_AND_UTILITIES', 'RENT_AND_UTILITIES_RENT'));
+  monthly(5, (a) => add('acc_current', a, 152, 'COUNCIL TAX DD', 'Lambeth Council', 'GOVERNMENT_AND_NON_PROFIT', 'GOVERNMENT_AND_NON_PROFIT_TAX_PAYMENT'));
+  monthly(12, (a) => add('acc_current', a, 10.99, 'NETFLIX.COM', 'Netflix', 'ENTERTAINMENT', 'ENTERTAINMENT_TV_AND_MOVIES', 'online'));
+  monthly(18, (a) => add('acc_card', a, 10.99, 'NETFLIX.COM', 'Netflix', 'ENTERTAINMENT', 'ENTERTAINMENT_TV_AND_MOVIES', 'online'));
+  monthly(20, (a) => add('acc_current', a, 185, 'ZOPA LOAN REPAYMENT', 'Zopa', 'LOAN_PAYMENTS', 'LOAN_PAYMENTS_PERSONAL_LOAN_PAYMENT'));
+  for (let d = 2; d < 118; d += 3) add('acc_current', d, 18 + ((d * 7) % 23), 'TESCO STORES 3021', 'Tesco', 'FOOD_AND_DRINK', 'FOOD_AND_DRINK_GROCERIES', 'in store');
+  for (let d = 4; d < 118; d += 9) add('acc_card', d, 24 + ((d * 5) % 31), 'PRET A MANGER', 'Pret A Manger', 'FOOD_AND_DRINK', 'FOOD_AND_DRINK_COFFEE', 'in store');
   return txs;
 }
 

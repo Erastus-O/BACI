@@ -150,6 +150,7 @@ Routes mirror the spec. Each screen has the artboard ID in a comment at the top.
 | 06 · 07 | `/onboarding/accounts` · `/onboarding/insight` | `src/app/onboarding/` |
 | 08 · S4 | `/home` (revoked state) | `src/app/(tabs)/home.tsx` |
 | A1 · A2 · 10 | `/chat` (`?q=`) | `src/app/(tabs)/chat.tsx`, `src/agent/`, `src/components/AffordabilityCard.tsx` |
+| AN | `/analytics` | `src/app/(tabs)/analytics.tsx`, `src/features/analytics/charts.tsx`, `src/lib/analytics.ts` |
 | 09 · S3 | `/accounts` (+ disconnect dialog) | `src/app/(tabs)/accounts.tsx`, `src/features/DisconnectDialog.tsx` |
 | S1 · S2 | `/settings` · `/settings/permissions` | `src/app/(tabs)/settings.tsx`, `src/app/settings/permissions.tsx` |
 

@@ -48,11 +48,15 @@ async function syncTransactions(db: Db, plaid: Plaid, item: ItemRow, key: Buffer
     const accountId = accountIds.get(t.account_id);
     if (!accountId) return;
     await db.query(
-      `insert into transactions (plaid_transaction_id, user_id, account_id, amount, date, name, merchant_name, category, pending)
-       values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      `insert into transactions (plaid_transaction_id, user_id, account_id, amount, date, name, merchant_name, category, pending, payment_channel, category_detailed)
+       values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
        on conflict (plaid_transaction_id) do update set amount = excluded.amount, date = excluded.date, name = excluded.name,
-         merchant_name = excluded.merchant_name, category = excluded.category, pending = excluded.pending`,
-      [t.transaction_id, item.user_id, accountId, t.amount, t.date, t.name, t.merchant_name ?? null, t.personal_finance_category?.primary ?? null, t.pending],
+         merchant_name = excluded.merchant_name, category = excluded.category, pending = excluded.pending,
+         payment_channel = excluded.payment_channel, category_detailed = excluded.category_detailed`,
+      [
+        t.transaction_id, item.user_id, accountId, t.amount, t.date, t.name, t.merchant_name ?? null, t.personal_finance_category?.primary ?? null, t.pending,
+        t.payment_channel ?? null, t.personal_finance_category?.detailed ?? null,
+      ],
     );
   };
 

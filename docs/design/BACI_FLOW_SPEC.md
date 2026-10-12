@@ -82,6 +82,7 @@ Status legend: ✅ built and matches the design · 🟡 built with a gap (see §
 | 06 | AddAnother | `/onboarding/accounts` | `screens/AddAnother.tsx` | ✅ |
 | 07 | FirstInsight | `/onboarding/insight` | `screens/FirstInsight.tsx` | 🟡 |
 | 08 | Home | `/home` | `screens/Home.tsx` | ✅ |
+| AN | Analytics | `/analytics` | `(tabs)/analytics.tsx` | ✅ |
 | 09 | Accounts | `/accounts` | `screens/Accounts.tsx` | ✅ |
 | 10 | Afford | `/chat` (affordability card) | `components/AffordabilityCard.tsx` | ✅ |
 | A1 | ChatHome | `/chat` | `screens/Chat.tsx` | ✅ |
@@ -190,7 +191,17 @@ Each section lists the **purpose**, the **API** it calls, the **states** it must
 - **API:** `GET /snapshot`, `GET /insights`, `GET /connections`, `GET /commitments?days=30` (403 treated as "not shared"), `GET /goals`, `POST /insights/:id/dismiss`.
 - **Content:** a coverage line or banner · available cash in current accounts · a 4-stat grid (savings, cards owed, loans owed, bills in the next 30 days, each "Not shared" when consent is off) · "Can I afford this?" entry · insights · coming up · goal · accounts summary.
 - **States:** healthy · stale (warning banner) · failed account (alert banner) · no accounts (connect CTA) · revoked consent (S4) · loading · error.
-- **Nav:** Home · Ask BACI (A1) · Accounts (09) · Settings (S1). Bottom tabs below 900px, side rail from 900px up.
+- **Nav:** Home · Ask BACI (A1) · Analytics (AN) · Accounts (09) · Settings (S1). Bottom tabs below 900px, side rail from 900px up.
+
+### AN Analytics — `/analytics`
+- **API:** `GET /transactions` (403 `consent_required` without "Transaction history"), plus the snapshot and commitments already in state. Everything else is computed in the app by `src/lib/analytics.ts`, the same in demo and live.
+- **Spending:** monthly bars for the last 12 months across all selected accounts (3M / 6M / 1Y), as a total or stacked by payment method. A dashed ceiling line and a shaded stable range sit behind them. Months over the ceiling are red, with a "!" marker and a legend entry. Tapping a month shows its spend, income and zone, and filters everything below to that month.
+- **Figures:** average per month (full months only), per year (the last 12 full months, or the average × 12 marked "At this rate"), and months over the ceiling.
+- **Payment method:** card, direct debit, standing order, transfer, cash or other, from Plaid's payment channel, detailed category and the payment reference. Shown as a donut with shares and amounts. Moves between the person's own accounts (savings transfers, card repayments) aren't spending.
+- **Ceiling and stable range:** the ceiling is 90% of monthly income. The stable range runs from regular bills and repayments up to 80% of income. A gauge marks this month so far and the average.
+- **Financial health (0–100):** spending vs income (40 points), a cash cushion of up to 6 months (20), debt repayments as a share of income (20), and month-to-month steadiness (20). Ratings: Excellent 80+, Good 70+, Fair 55+, Needs attention below that. The rating carries an icon and label, and the card shows the score the person would have at the ceiling. Parts that can't be scored yet are named, not guessed.
+- **Lists:** by category, by account, and all transactions with method filters and "Show more".
+- **States:** loaded · not enough history or no income (named) · no accounts · transactions not shared · loading · error.
 
 ### 09 Accounts — `/accounts`
 - **API:** `GET /connections`, `PATCH /accounts/:id {selected}`, `POST /connections/:id/sync`, `DELETE /connections/:id`.

@@ -32,6 +32,7 @@ export default function TabsLayout() {
     >
       <Tabs.Screen name="home" options={{ title: 'Home', tabBarIcon: icon('home') }} />
       <Tabs.Screen name="chat" options={{ title: 'Ask BACI', tabBarIcon: icon('chat') }} />
+      <Tabs.Screen name="analytics" options={{ title: 'Analytics', tabBarIcon: icon('chart') }} />
       <Tabs.Screen name="accounts" options={{ title: 'Accounts', tabBarIcon: icon('wallet') }} />
       <Tabs.Screen name="settings" options={{ title: 'Settings', tabBarIcon: icon('settings') }} />
     </Tabs>
