@@ -4,6 +4,8 @@
 
 export const DEMO_TODAY = '2026-09-26';
 
+import type { AccountKind } from './mock';
+
 export type DemoTxn = {
   id: string;
   providerAccountId: string;
@@ -27,24 +29,74 @@ function rng(seed: number) {
   };
 }
 
-let cache: DemoTxn[] | null = null;
+/** Which account each part of the story belongs to: pay and bills, a second current account, a credit card, savings. */
+type Role = 'main' | 'second' | 'card' | 'saver';
+/** Halves of a move between own accounts, and the second StreamFlix plan: dropped when the other account isn't there. */
+type Tag = 'to_saver' | 'card_payment' | 'duplicate';
+type Generated = Omit<DemoTxn, 'providerAccountId'> & { role: Role; tag?: Tag };
 
-export function demoTransactions(): DemoTxn[] {
+const SANDBOX_ROLES: Record<string, Role> = { 'mer-4821': 'main', 'har-1177': 'second', 'lum-0092': 'card', 'nor-3309': 'saver' };
+
+let cache: Generated[] | null = null;
+
+/**
+ * The sample history, placed on whichever accounts are connected: the sandbox banks keep their
+ * own accounts; any other bank's accounts take a role by type. Without a second current account
+ * or a card, that spending happens on the main account instead.
+ */
+export function demoTransactionsFor(accounts: { providerAccountId: string; kind: AccountKind }[]): DemoTxn[] {
+  const byRole: Partial<Record<Role, string>> = {};
+  const taken = new Set<string>();
+  for (const [id, role] of Object.entries(SANDBOX_ROLES)) {
+    if (accounts.some((a) => a.providerAccountId === id)) {
+      byRole[role] = id;
+      taken.add(id);
+    }
+  }
+  const claim = (role: Role, kind: AccountKind) => {
+    if (byRole[role]) return;
+    const a = accounts.find((x) => x.kind === kind && !taken.has(x.providerAccountId));
+    if (!a) return;
+    byRole[role] = a.providerAccountId;
+    taken.add(a.providerAccountId);
+  };
+  claim('main', 'current');
+  claim('second', 'current');
+  claim('card', 'credit');
+  claim('saver', 'savings');
+  if (!byRole.main && byRole.second) {
+    byRole.main = byRole.second;
+    delete byRole.second;
+  }
+  return generate().flatMap(({ role, tag, ...t }) => {
+    if ((tag === 'to_saver' && !(byRole.saver && byRole.main)) || (tag === 'card_payment' && !(byRole.card && byRole.main)) || (tag === 'duplicate' && !byRole.second)) return [];
+    const id = byRole[role] ?? (role === 'second' || role === 'card' ? byRole.main : undefined);
+    return id ? [{ ...t, providerAccountId: id }] : [];
+  });
+}
+
+function generate(): Generated[] {
   if (cache) return cache;
   const rand = rng(20261026);
   const between = (lo: number, hi: number) => Math.round((lo + rand() * (hi - lo)) * 100) / 100;
   const pick = <T,>(xs: T[]) => xs[Math.floor(rand() * xs.length)];
-  const out: DemoTxn[] = [];
+  const out: Generated[] = [];
   let n = 0;
-  const add = (acc: string, date: string, amount: number, name: string, merchant: string | null, category: string, detailed: string | null, channel: DemoTxn['channel'] = 'other') => {
+  let tag: Tag | undefined;
+  const add = (role: Role, date: string, amount: number, name: string, merchant: string | null, category: string, detailed: string | null, channel: DemoTxn['channel'] = 'other') => {
     if (date > DEMO_TODAY) return;
-    out.push({ id: `demo_tx_${++n}`, providerAccountId: acc, date, amount, name, merchant, category, detailed, channel });
+    out.push({ id: `demo_tx_${++n}`, role, tag, date, amount, name, merchant, category, detailed, channel });
+  };
+  const tagged = (t: Tag, fn: () => void) => {
+    tag = t;
+    fn();
+    tag = undefined;
   };
 
-  const CUR = 'mer-4821';
-  const HAR = 'har-1177';
-  const CARD = 'lum-0092';
-  const SAVER = 'nor-3309';
+  const CUR = 'main';
+  const HAR = 'second';
+  const CARD = 'card';
+  const SAVER = 'saver';
 
   for (let i = 11; i >= 0; i--) {
     const d = new Date(Date.UTC(2026, 8 - i, 1));
@@ -55,8 +107,10 @@ export function demoTransactions(): DemoTxn[] {
 
     // ----- Income and money between own accounts (not spending) -----
     add(CUR, on(25), -3550, 'ACME LTD SALARY', 'Acme Ltd', 'INCOME', 'INCOME_WAGES');
-    add(CUR, on(26), 500, 'TO NORTHGATE EASY SAVER', null, 'TRANSFER_OUT', 'TRANSFER_OUT_SAVINGS');
-    add(SAVER, on(26), -500, 'FROM MERIDIAN 4821', null, 'TRANSFER_IN', 'TRANSFER_IN_ACCOUNT_TRANSFER');
+    tagged('to_saver', () => {
+      add(CUR, on(26), 500, 'TO SAVINGS ACCOUNT', null, 'TRANSFER_OUT', 'TRANSFER_OUT_SAVINGS');
+      add(SAVER, on(26), -500, 'FROM CURRENT ACCOUNT', null, 'TRANSFER_IN', 'TRANSFER_IN_ACCOUNT_TRANSFER');
+    });
 
     // ----- Regular payments -----
     add(CUR, on(1), 1100, 'HOMELET RENT SO', null, 'RENT_AND_UTILITIES', 'RENT_AND_UTILITIES_RENT');
@@ -67,8 +121,8 @@ export function demoTransactions(): DemoTxn[] {
     add(CUR, on(12), 10.99, 'STREAMFLIX.COM', 'StreamFlix', 'ENTERTAINMENT', 'ENTERTAINMENT_TV_AND_MOVIES', 'online');
     add(CUR, on(17), 39.99, 'PUREGYM DD', 'PureGym', 'PERSONAL_CARE', 'PERSONAL_CARE_GYMS_AND_FITNESS_CENTERS');
     add(CUR, on(22), 11.5, 'ASPIRE INSURANCE DD', 'Aspire', 'GENERAL_SERVICES', 'GENERAL_SERVICES_INSURANCE');
-    add(HAR, on(3), 185, 'HARBOUR LOAN 5520 SO', 'Harbour Bank', 'LOAN_PAYMENTS', 'LOAN_PAYMENTS_PERSONAL_LOAN_PAYMENT');
-    add(HAR, on(20), 10.99, 'STREAMFLIX.COM', 'StreamFlix', 'ENTERTAINMENT', 'ENTERTAINMENT_TV_AND_MOVIES', 'online');
+    add(HAR, on(3), 185, 'PERSONAL LOAN SO', null, 'LOAN_PAYMENTS', 'LOAN_PAYMENTS_PERSONAL_LOAN_PAYMENT');
+    tagged('duplicate', () => add(HAR, on(20), 10.99, 'STREAMFLIX.COM', 'StreamFlix', 'ENTERTAINMENT', 'ENTERTAINMENT_TV_AND_MOVIES', 'online'));
 
     // ----- Everyday spending -----
     for (let day = 3; day <= days; day += 7) {
@@ -123,8 +177,10 @@ export function demoTransactions(): DemoTxn[] {
     // The card is paid off in full the next month (between own accounts, so not spending twice).
     const next = new Date(Date.UTC(y, m + 1, 15)).toISOString().slice(0, 10);
     const paid = Math.round(card * 100) / 100;
-    add(CUR, next, paid, 'LUMEN CARD PAYMENT', 'Lumen', 'LOAN_PAYMENTS', 'LOAN_PAYMENTS_CREDIT_CARD_PAYMENT');
-    add(CARD, next, -paid, 'PAYMENT RECEIVED THANK YOU', null, 'LOAN_PAYMENTS', 'LOAN_PAYMENTS_CREDIT_CARD_PAYMENT');
+    tagged('card_payment', () => {
+      add(CUR, next, paid, 'CREDIT CARD PAYMENT', null, 'LOAN_PAYMENTS', 'LOAN_PAYMENTS_CREDIT_CARD_PAYMENT');
+      add(CARD, next, -paid, 'PAYMENT RECEIVED THANK YOU', null, 'LOAN_PAYMENTS', 'LOAN_PAYMENTS_CREDIT_CARD_PAYMENT');
+    });
   }
   cache = out;
   return out;

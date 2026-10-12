@@ -24,7 +24,7 @@ import {
   sandboxAccounts,
 } from '../data/mock';
 import { accountsFor, findInstitution, pickerInstitutions } from '../data/banks';
-import { DEMO_TODAY, demoTransactions } from '../data/demoTransactions';
+import { DEMO_TODAY, demoTransactionsFor } from '../data/demoTransactions';
 import { Analytics, computeAnalytics, Txn } from '../lib/analytics';
 import { HttpError, liveAvailable, request, session } from './http';
 
@@ -664,7 +664,10 @@ export async function getTransactions(): Promise<Txn[]> {
     return r.transactions.flatMap((t) => withAccount(t, usable.find((a) => a.id === t.accountId)));
   }
   await latency(260);
-  return demoTransactions().flatMap(({ providerAccountId, ...t }) => withAccount({ ...t, accountId: providerAccountId }, usable.find((a) => a.providerAccountId === providerAccountId)));
+  // Roles are given out across every chosen account, then filtered by consent, so turning off
+  // "Credit cards" hides the card's spending instead of moving it onto the current account.
+  const chosen = state.accounts.filter((a) => a.selected && state.connections.some((c) => c.id === a.connectionId && c.status !== 'awaiting_authorisation'));
+  return demoTransactionsFor(chosen).flatMap(({ providerAccountId, ...t }) => withAccount({ ...t, accountId: providerAccountId }, usable.find((a) => a.providerAccountId === providerAccountId)));
 }
 
 /** Spending by month and payment method, the ceiling and stable range, and the health score. */
