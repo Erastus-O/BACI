@@ -6,8 +6,8 @@ import { Icon, IconName } from '../../components/Icon';
 import { Donut, LegendItem, RangeGauge, ScoreRing, SpendBars } from '../../features/analytics/charts';
 import { Analytics as Data, Health, isInternal, methodColour, methodLabel, methods, monthName, PayMethod, Payment, Rating, summarise, zoneOf } from '../../lib/analytics';
 import { money } from '../../lib/format';
-import { getAnalytics, getConnections } from '../../services/api';
-import { isConsentError, useQuery } from '../../services/useQuery';
+import { getAnalytics, getConnections, refresh } from '../../services/api';
+import { isConsentError, useMutation, useQuery } from '../../services/useQuery';
 import { colors, fonts } from '../../theme';
 
 type Range = '3M' | '6M' | '1Y';
@@ -32,6 +32,7 @@ const shortDate = (iso: string) => new Intl.DateTimeFormat('en-GB', { day: 'nume
 // Analytics — /analytics: spending by month and payment method, ceiling and stable range, health score.
 export default function AnalyticsScreen() {
   const q = useQuery(getAnalytics);
+  const check = useMutation(refresh);
   const conns = useQuery(getConnections);
   const header = <PageHeader title="Analytics" subtitle="Your spending across all your accounts" />;
 
@@ -66,16 +67,39 @@ export default function AnalyticsScreen() {
       </Screen>
     );
   }
-  if (!q.data.payments.length) {
-    const connected = (conns.data ?? []).some((c) => c.status !== 'awaiting_authorisation');
+  // Nothing spent (e.g. only a savings account chosen) reads as empty, not a dashboard of zeros.
+  if (!q.data.payments.some((p) => p.amount > 0 && !isInternal(p))) {
+    const connections = (conns.data ?? []).filter((c) => c.status !== 'awaiting_authorisation');
     return (
       <Screen edges={['top']}>
         {header}
-        <Card style={{ gap: 12 }}>
-          <Strong>{connected ? 'No transactions yet' : 'No accounts connected yet'}</Strong>
-          <Muted>{connected ? 'Your bank is still sending your history. Check back in a few minutes.' : 'Connect a bank to see your spending by month, how you pay, and your financial health score.'}</Muted>
-          {connected ? null : <Button label="Connect an account" icon="plus" onPress={() => router.push({ pathname: '/accounts/add', params: { flow: 'accounts' } })} />}
-        </Card>
+        {connections.length === 0 ? (
+          <Card style={{ gap: 12 }}>
+            <Strong>No accounts connected yet</Strong>
+            <Muted>Connect a bank to see your spending by month, how you pay, and your financial health score.</Muted>
+            <Button label="Connect an account" icon="plus" onPress={() => router.push({ pathname: '/accounts/add', params: { flow: 'accounts' } })} />
+          </Card>
+        ) : connections.some((c) => c.importing) ? (
+          <Card style={{ gap: 12 }}>
+            <Row gap={10}>
+              <Icon name="clock" size={20} color={colors.infoFg} />
+              <Strong>Your history is on its way</Strong>
+            </Row>
+            <Muted>
+              {connections.filter((c) => c.importing).map((c) => c.institution.name).join(' and ')} {connections.filter((c) => c.importing).length === 1 ? 'is' : 'are'} still sending your transactions. This usually takes a few minutes, and up to an hour for a full year.
+            </Muted>
+            <Button label={check.busy ? 'Checking…' : 'Check again'} icon="refresh" size="md" disabled={check.busy} onPress={() => check.run()} />
+          </Card>
+        ) : (
+          <Card style={{ gap: 12 }}>
+            <Strong>No spending to show yet</Strong>
+            <Muted>
+              BACI didn’t find any transactions in the last 12 months on the accounts you’ve chosen ({connections.map((c) => c.institution.name).join(', ')}). Analytics works best with the current account your pay goes into and any cards you spend on.
+            </Muted>
+            <Button label="Choose accounts" size="md" onPress={() => router.navigate('/accounts')} />
+            <Button label="Connect another account" icon="plus" variant="secondary" size="md" onPress={() => router.push({ pathname: '/accounts/add', params: { flow: 'accounts' } })} />
+          </Card>
+        )}
       </Screen>
     );
   }
