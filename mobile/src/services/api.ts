@@ -24,6 +24,8 @@ import {
   sandboxAccounts,
 } from '../data/mock';
 import { accountsFor, findInstitution, pickerInstitutions } from '../data/banks';
+import { DEMO_TODAY, demoTransactions } from '../data/demoTransactions';
+import { Analytics, computeAnalytics, Txn } from '../lib/analytics';
 import { HttpError, liveAvailable, request, session } from './http';
 
 // ---------- Types ----------
@@ -641,6 +643,44 @@ export async function dismissInsight(id: string) {
   }
   await latency(120);
   commit({ dismissedInsights: [...state.dismissedInsights, id] });
+}
+
+// ---------- Analytics (GET /transactions) ----------
+
+type RemoteTxn = { id: string; accountId: string; date: string; amount: number; name: string; merchant: string | null; category: string | null; detailed: string | null; channel: string | null };
+
+/** Every transaction on the accounts BACI may use, newest first — 403 when transactions aren't shared. */
+export async function getTransactions(): Promise<Txn[]> {
+  requireConsent('transactions');
+  const usable = usableAccounts().filter((a) => !isExcluded(a));
+  const accountName = (a: Account) => {
+    const conn = state.connections.find((c) => c.id === a.connectionId);
+    const bank = conn ? instOf(conn).name : '';
+    return a.name.toLowerCase().startsWith(bank.split(' ')[0].toLowerCase()) ? a.name : `${bank.replace(/ (Bank|Building Society|Card)$/, '')} ${a.name}`.trim();
+  };
+  const withAccount = (t: Omit<Txn, 'accountName' | 'accountKind'>, a: Account | undefined): Txn[] => (a ? [{ ...t, accountId: a.id, accountName: accountName(a), accountKind: a.kind }] : []);
+  if (mode === 'live') {
+    const r = await live<{ transactions: RemoteTxn[] }>('GET', '/v1/transactions');
+    return r.transactions.flatMap((t) => withAccount(t, usable.find((a) => a.id === t.accountId)));
+  }
+  await latency(260);
+  return demoTransactions().flatMap(({ providerAccountId, ...t }) => withAccount({ ...t, accountId: providerAccountId }, usable.find((a) => a.providerAccountId === providerAccountId)));
+}
+
+/** Spending by month and payment method, the ceiling and stable range, and the health score. */
+export async function getAnalytics(): Promise<Analytics> {
+  requireConsent();
+  const transactions = await getTransactions();
+  const snap = computeSnapshot();
+  const today = mode === 'live' ? new Date().toISOString().slice(0, 10) : DEMO_TODAY;
+  return computeAnalytics({
+    transactions,
+    today,
+    monthlyIncome: state.finance.monthlyIncome,
+    incomeAllowed: allowed('income'),
+    fixedMonthly: state.finance.commitments.reduce((s, b) => s + b.amount, 0),
+    cash: snap.availableCurrent + (snap.savings ?? 0),
+  });
 }
 
 // ---------- Agent tool: calculatePurchaseImpact ----------

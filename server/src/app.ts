@@ -168,6 +168,34 @@ export function createApp({ db, plaid, config }: { db: Db; plaid: Plaid; config:
     return c.json(await state(c));
   });
 
+  // Analytics: every transaction on the selected accounts, last ~13 months. Needs "Transaction history" consent.
+  app.get('/v1/transactions', async (c) => {
+    const userId = c.get('userId');
+    const st = await db.one<{ consent: { permissions?: Record<string, boolean> } | null }>('select consent from user_state where user_id = $1', [userId]);
+    if (!st?.consent) throw new HttpError(403, 'consent_required', 'BACI needs your permission to analyse your data.');
+    if (!st.consent.permissions?.transactions) throw new HttpError(403, 'consent_required', 'Transaction history isn’t shared.');
+    const rows = await db.query<{ id: string; account_id: string; date: string; amount: number; name: string; merchant_name: string | null; category: string | null; category_detailed: string | null; payment_channel: string | null }>(
+      `select t.plaid_transaction_id as id, t.account_id, t.date, t.amount, t.name, t.merchant_name, t.category, t.category_detailed, t.payment_channel
+       from transactions t join accounts a on a.id = t.account_id
+       where t.user_id = $1 and a.selected and not t.pending and t.date >= current_date - 400
+       order by t.date desc, t.plaid_transaction_id`,
+      [userId],
+    );
+    return c.json({
+      transactions: rows.map((r) => ({
+        id: r.id,
+        accountId: r.account_id,
+        date: r.date,
+        amount: r.amount,
+        name: r.name,
+        merchant: r.merchant_name,
+        category: r.category,
+        detailed: r.category_detailed,
+        channel: r.payment_channel,
+      })),
+    });
+  });
+
   // ---------- Bank connections (Plaid) ----------
 
   app.post('/v1/plaid/link-token', async (c) => {

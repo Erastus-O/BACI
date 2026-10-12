@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import { findRecurring, forecast, insights, merchantKey, upcomingCommitments, type Tx } from '../src/finance.ts';
 import { sampleTransactions } from './fakePlaid.ts';
 
-const today = new Date();
+// A fixed day, so the 30-day window doesn't shift with the calendar (e.g. a bill due exactly 31 days out).
+const today = new Date('2026-09-26T12:00:00Z');
 const todayIso = today.toISOString().slice(0, 10);
 const txs: Tx[] = sampleTransactions(today).map((t) => ({
   accountId: t.account_id,

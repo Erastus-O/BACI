@@ -136,6 +136,29 @@ test('select accounts, sync → real balances, bills, income, insight', async ()
   assert.match(st.finance.insights[0].title, /Netflix twice/);
 });
 
+test('transactions for analytics: selected accounts only, with how each was paid', async () => {
+  const r = await call('GET', '/v1/transactions', undefined, token);
+  assert.equal(r.status, 200);
+  const txs = r.json.transactions;
+  assert.ok(txs.length > 50);
+  const accounts = (await call('GET', '/v1/state', undefined, token)).json.accounts;
+  const saver = accounts.find((a: any) => a.providerAccountId === 'acc_saver').id;
+  assert.ok(txs.every((t: any) => t.accountId !== saver), 'unselected accounts are left out');
+  const tesco = txs.find((t: any) => t.merchant === 'Tesco');
+  assert.equal(tesco.channel, 'in store');
+  assert.equal(tesco.detailed, 'FOOD_AND_DRINK_GROCERIES');
+  assert.equal(typeof tesco.amount, 'number');
+  assert.match(tesco.date, /^\d{4}-\d{2}-\d{2}$/);
+  assert.ok(txs.every((t: any, i: number) => i === 0 || txs[i - 1].date >= t.date), 'newest first');
+
+  // Without "Transaction history" consent: refused.
+  await call('PUT', '/v1/consent', { permissions: { ...permissions, transactions: false }, version: '2026-09.1' }, token);
+  const no = await call('GET', '/v1/transactions', undefined, token);
+  assert.equal(no.status, 403);
+  assert.equal(no.json.error.code, 'consent_required');
+  await call('PUT', '/v1/consent', { permissions, version: '2026-09.1' }, token);
+});
+
 test('another user cannot see or touch this connection', async () => {
   const other = (await call('POST', '/v1/auth/signup', { email: 'eve@example.com', password: 'another long one' })).json.token;
   assert.equal((await call('GET', '/v1/state', undefined, other)).json.connections.length, 0);

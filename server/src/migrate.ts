@@ -81,6 +81,10 @@ const migrations: string[] = [
   );
   create index transactions_user_date on transactions(user_id, date);
   `,
+  // Analytics: how each payment was made.
+  `
+  alter table transactions add column payment_channel text, add column category_detailed text;
+  `,
 ];
 
 export async function migrate(db: Db) {

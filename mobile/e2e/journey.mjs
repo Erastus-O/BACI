@@ -225,6 +225,24 @@ try {
   await shot('A1-how-much');
   ok('figures match the design');
 
+  step('Analytics: health score, monthly spending vs ceiling, stable range, payment methods, transactions');
+  await visible(page.getByRole('tab', { name: /Analytics/ })).click().catch(() => click('Analytics'));
+  await see('Financial health');
+  await see('74');
+  await see('£2,890.04');
+  await see('Spending ceiling');
+  await see('£1,864 – £2,840 a month');
+  await shot('AN-analytics');
+  await button(/^Aug 2026: £3,892\.77, over your ceiling/).click();
+  await see('Over your ceiling');
+  await see('by £697.77');
+  await click('By method');
+  await see('Standing order');
+  await shot('AN-august-by-method');
+  await button('Cash').click();
+  await see('ATM WITHDRAWAL LISBOA');
+  ok('analytics computed from 12 months of sample transactions');
+
   step('Live data unavailable → A2 "won\'t guess" with Try again');
   await visible(page.getByRole('tab', { name: /Settings/ })).click().catch(() => click('Settings'));
   await visible(page.getByRole('switch', { name: 'Simulate live data unavailable' })).click();

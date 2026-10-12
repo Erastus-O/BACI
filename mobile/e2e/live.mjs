@@ -132,6 +132,15 @@ try {
   await shot('07-afford');
   ok('affordability card computed from live data');
 
+  step('Analytics from real (stand-in) transactions');
+  await visible(page.getByRole('tab', { name: /Analytics/ })).click();
+  await see('Financial health', { timeout: 15000 });
+  await see('Spending ceiling');
+  await see('How you pay');
+  await see('Tesco');
+  await shot('07b-analytics');
+  ok('analytics built from GET /v1/transactions');
+
   step('Reload → still signed in (session restored)');
   await page.goto(`http://localhost:${WEB_PORT}/`);
   await see('Your money, together', { timeout: 15000 });
