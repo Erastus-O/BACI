@@ -54,6 +54,12 @@ jobs:
           EXPO_PUBLIC_SANDBOX=1 EXPO_PUBLIC_ELEVENLABS_AGENT_ID=off npx expo export --platform web --clear --output-dir dist
           node e2e/journey.mjs dist shots
 
+      - name: Ask BACI with the agent on (reply, dropped conversation, silence) against a fake ElevenLabs
+        working-directory: mobile
+        run: |
+          EXPO_PUBLIC_SANDBOX=1 npx expo export --platform web --clear --output-dir dist-agent
+          node e2e/agent.mjs dist-agent shots
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:

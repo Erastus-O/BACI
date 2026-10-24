@@ -44,7 +44,7 @@ The **BACI** agent (`agent_8601m3f031tgf81ajvvcd0xdezab`, public) is built in as
 - To turn the agent off and use only on-device answers (offline demos, e2e), set `EXPO_PUBLIC_ELEVENLABS_AGENT_ID=off`.
 - Env values are inlined into the bundle and cached, so restart with `npx expo start --clear` after changing `.env`.
 
-If a typed message can't reach the agent (a connection error, or no connection within 12 seconds), BACI answers it on the device and says so.
+If a typed message doesn't get a reply, BACI answers it on the device and says why. This covers a connection error, no connection within 12 seconds, the agent ending the conversation, and no reply within 20 seconds. If a voice call is ended by the agent, the reason is shown.
 
 Private agent (authentication on): keep the API key off the phone. Run the included token server and point the app at it:
 
@@ -180,6 +180,11 @@ npm i -D playwright && node e2e/journey.mjs   # spec §6 acceptance walk-through
 `e2e/journey.mjs` runs spec §6 steps 1–9 at 390×844 and saves screenshots. It adds two more checks:
 - Sample data gives design 10's figures for a £1,200 laptop: tight, lowest point £426.07, −£73.93 against the buffer.
 - A2's refusal to guess when live data is unavailable.
+
+`e2e/agent.mjs` runs Ask BACI against a fake ElevenLabs agent (build with the agent on: `EXPO_PUBLIC_SANDBOX=1 npx expo export --platform web --clear --output-dir dist-agent`). It checks that a typed question always gets an answer:
+- **Agent replies:** its answer is shown.
+- **Agent drops the conversation:** BACI answers on the device and shows the reason ElevenLabs gave, for example a text-only override that isn't allowed.
+- **Agent says nothing:** after 20 seconds, BACI answers on the device.
 
 ## Known gaps
 
