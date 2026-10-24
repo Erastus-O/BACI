@@ -46,6 +46,22 @@ const withId = <T extends object>(i: T) => ({ ...i, id: uid() }) as unknown as C
 
 const screens = { home: '/home', chat: '/chat', accounts: '/accounts', settings: '/settings', permissions: '/settings/permissions', add_account: '/accounts/add' } as const;
 
+type Pending = { text: string; payload: string; cardShown: boolean };
+
+/** What the ElevenLabs SDK passes to onDisconnect (DisconnectionDetails in @elevenlabs/client). */
+type DisconnectionDetails = { reason: 'user' } | { reason: 'agent' | 'error'; message?: string; closeCode?: number; closeReason?: string };
+
+/** How long a typed message waits for the agent's reply before BACI answers on the device. */
+const REPLY_TIMEOUT_MS = 20000;
+
+/** Why the agent ended the conversation, in words; null when the user ended it. */
+function disconnectReason(d?: DisconnectionDetails): string | null {
+  if (!d || d.reason === 'user') return null;
+  const detail = d.closeReason || d.message;
+  const suffix = detail ? ` (${detail.trim().replace(/\.$/, '')})` : '';
+  return d.reason === 'agent' ? `The BACI agent ended the conversation${suffix}` : `The connection to the BACI agent dropped${suffix}`;
+}
+
 const TOOL_FAILED = "Tell the user: I couldn't retrieve your live financial data just now, so I won't guess at the numbers. Offer to try again.";
 const NO_CONSENT = "The user hasn't given BACI permission to analyse this data. Tell them you can't answer, and that they can turn access on in Settings › Data permissions. Don't estimate.";
 
@@ -73,9 +89,14 @@ function AgentChatInner({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const ctx = useRef<Ctx>(initialCtx);
   /** Typed messages waiting for the text session to connect: what the user typed, and what goes to the agent. */
-  const queued = useRef<{ text: string; payload: string; cardShown: boolean }[]>([]);
+  const queued = useRef<Pending[]>([]);
+  /** Typed messages the agent has been sent but hasn't answered yet. */
+  const awaiting = useRef<Pending[]>([]);
   const connected = useRef(false);
+  const modeRef = useRef<SessionMode | null>(null);
+  modeRef.current = mode;
   const connectTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const replyTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const push = useCallback((...next: NewItem[]) => setItems((prev) => [...prev, ...next.map(withId)]), []);
 
@@ -127,12 +148,16 @@ function AgentChatInner({ children }: { children: ReactNode }) {
     };
   }, [push]);
 
-  /** The agent couldn't be reached: answer waiting messages on the device instead of leaving them hanging. */
-  const answerLocally = useCallback(async () => {
+  /**
+   * The agent couldn't be reached, dropped the conversation or didn't reply: answer every waiting
+   * message on the device instead of leaving it hanging, and say why.
+   */
+  const answerLocally = useCallback(async (why = "Couldn't reach the BACI agent") => {
     clearTimeout(connectTimer.current);
-    const waiting = queued.current.splice(0);
+    clearTimeout(replyTimer.current);
+    const waiting = [...awaiting.current.splice(0), ...queued.current.splice(0)];
     if (!waiting.length) return;
-    push({ kind: 'system', text: "Couldn't reach the BACI agent, so this was answered on your device." });
+    push({ kind: 'system', text: `${why}, so this was answered on your device.` });
     for (const w of waiting) {
       try {
         const r = await respond(w.text, ctx.current);
@@ -154,6 +179,22 @@ function AgentChatInner({ children }: { children: ReactNode }) {
     }
   }, [sendContextualUpdate]);
 
+  /** Sends typed messages to the agent and starts the clock on its reply. */
+  const sendToAgent = useCallback(
+    (list: Pending[]) => {
+      if (!list.length) return;
+      list.forEach((q) => sendUserMessage(q.payload));
+      awaiting.current.push(...list);
+      clearTimeout(replyTimer.current);
+      replyTimer.current = setTimeout(() => {
+        if (!awaiting.current.length) return;
+        answerLocally("BACI's agent didn't reply");
+        endSession();
+      }, REPLY_TIMEOUT_MS);
+    },
+    [answerLocally, endSession, sendUserMessage],
+  );
+
   const callbacks = useMemo(
     () => ({
       onConnect: () => {
@@ -162,22 +203,26 @@ function AgentChatInner({ children }: { children: ReactNode }) {
         setError(null);
         // The agent gets the user's numbers even if no client tools are configured.
         shareSnapshot();
-        queued.current.splice(0).forEach((q) => sendUserMessage(q.payload));
+        sendToAgent(queued.current.splice(0));
       },
-      onDisconnect: () => {
-        const neverConnected = !connected.current;
+      onDisconnect: (details?: DisconnectionDetails) => {
         connected.current = false;
+        const wasVoice = modeRef.current === 'voice';
         setMode(null);
         setThinking(false);
-        if (neverConnected) answerLocally();
+        const why = disconnectReason(details);
+        if (queued.current.length || awaiting.current.length) answerLocally(why ?? "Couldn't reach the BACI agent");
+        else if (why && wasVoice) setError(`${why}. Try again, or type your question.`);
       },
       onError: (msg: string) => {
         setThinking(false);
-        if (!connected.current && queued.current.length) answerLocally();
+        if (queued.current.length || awaiting.current.length) answerLocally(`The BACI agent hit a problem (${msg})`);
         else setError(msg);
       },
       onMessage: ({ message: text, role }: { message: string; role: 'user' | 'agent' }) => {
         if (role === 'agent') {
+          clearTimeout(replyTimer.current);
+          awaiting.current = [];
           setThinking(false);
           push({ kind: 'agent', text });
           return;
@@ -191,7 +236,7 @@ function AgentChatInner({ children }: { children: ReactNode }) {
         setThinking(true);
       },
     }),
-    [answerLocally, push, sendUserMessage, shareSnapshot],
+    [answerLocally, push, sendToAgent, shareSnapshot],
   );
 
   const open = useCallback(
@@ -263,11 +308,11 @@ function AgentChatInner({ children }: { children: ReactNode }) {
       }
 
       setThinking(true);
+      const pending: Pending = { text, cardShown: Boolean(context) && context !== TOOL_FAILED && context !== NO_CONSENT, payload: context ? `${text}\n\n[Figures from the BACI app — use these, don't recalculate]\n${context}` : text };
       if (status === 'connected') {
-        if (context) sendContextualUpdate(context);
-        sendUserMessage(text);
+        sendToAgent([pending]);
       } else {
-        queued.current.push({ text, cardShown: Boolean(context) && context !== TOOL_FAILED && context !== NO_CONSENT, payload: context ? `${text}\n\n[Figures from the BACI app — use these, don't recalculate]\n${context}` : text });
+        queued.current.push(pending);
         if (status !== 'connecting') {
           clearTimeout(connectTimer.current);
           connectTimer.current = setTimeout(() => {
@@ -281,7 +326,7 @@ function AgentChatInner({ children }: { children: ReactNode }) {
       }
       return true;
     },
-    [open, push, sendContextualUpdate, sendUserMessage, status],
+    [answerLocally, endSession, open, push, sendToAgent, status],
   );
 
   // Keep the agent's numbers current when accounts or consent change mid-conversation.
