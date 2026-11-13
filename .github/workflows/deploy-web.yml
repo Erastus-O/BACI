@@ -1,7 +1,8 @@
 name: Deploy web app
 
 # Builds the Expo web app with the BACI ElevenLabs agent turned on and publishes it
-# to GitHub Pages: https://erastus-o.github.io/BACI/
+# to GitHub Pages: https://erastus-o.github.io/BACI/, with the website (website/) at
+# https://erastus-o.github.io/BACI/site/
 #
 # If the ELEVENLABS_API_KEY repository secret is set, it also turns on what the app needs
 # from the agent (client tools, "Text only" override, website allowlist, BACI's rules);
@@ -60,6 +61,10 @@ jobs:
           # The BACI API (server/). Set the repository variable BACI_API_URL, e.g. https://baci-api.onrender.com,
           # to turn on accounts and real bank connections. Unset: the site runs on sample data only.
           EXPO_PUBLIC_API_URL: ${{ vars.BACI_API_URL }}
+
+      - name: Add the website
+        # The landing page (website/) is plain HTML and CSS, served at /<repo>/site/ next to the app.
+        run: cp -r ../website dist/site
 
       - name: Single-page app fallback
         # GitHub Pages serves 404.html for unknown paths, so deep links still load the app.

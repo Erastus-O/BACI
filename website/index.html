@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BACI — One clear view of all your money</title>
+<meta name="description" content="With your permission, BACI connects your accounts and analyses your spending and savings together, then answers questions like “Can I afford this?” in plain English.">
+<meta name="theme-color" content="#0A0D24">
+<link rel="icon" href="img/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<!-- Links into the app: on GitHub Pages this site is served at /BACI/site/ and the app at /BACI/
+     (see .github/workflows/deploy-web.yml), so "../" is the app. -->
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></symbol>
+  <symbol id="i-bank" viewBox="0 0 24 24"><path d="M4 10h16M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18M12 3l9 5H3z"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></symbol>
+  <symbol id="i-toggle" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="9" rx="4.5"/><circle cx="16.5" cy="12.5" r="2.5" fill="currentColor"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 004 0"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-explain" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5M8.5 11h5M11 8.5v5"/></symbol>
+</svg>
+
+<header class="nav">
+  <nav aria-label="Main">
+    <a class="logo" href="#top" aria-label="BACI home"><img src="img/logo.png" alt=""><span>BAC<b>I</b></span></a>
+    <div class="links">
+      <a href="#accounts">Accounts</a>
+      <a href="#how">How it works</a>
+      <a href="#security">Security</a>
+      <a href="#pricing">Pricing</a>
+    </div>
+    <div class="right">
+      <a class="login" href="../auth?mode=signin">Log in</a>
+      <a class="btn sm" href="../">Get started</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+
+<!-- Hero -->
+<section id="top" class="hero">
+  <div class="wrap">
+    <div class="copy">
+      <p class="kicker">FINANCE INTELLIGENCE AGENT</p>
+      <h1>One clear view of all your money.</h1>
+      <p class="lede">With your permission, BACI connects your accounts and analyses your spending and savings together — then answers questions like "Can I afford this?" in plain English.</p>
+      <form class="signup" action="../auth" method="get">
+        <label class="sr" for="hero-email">Email address</label>
+        <input id="hero-email" type="email" placeholder="you@example.com" autocomplete="email" required>
+        <button class="btn" type="submit">Join the waitlist</button>
+      </form>
+      <div class="ticks">
+        <span><svg class="icon" width="16" height="16" stroke-width="2.4" aria-hidden="true"><use href="#i-check"/></svg>Read-only access</span>
+        <span><svg class="icon" width="16" height="16" stroke-width="2.4" aria-hidden="true"><use href="#i-check"/></svg>Never sees your bank password</span>
+        <span><svg class="icon" width="16" height="16" stroke-width="2.4" aria-hidden="true"><use href="#i-check"/></svg>Disconnect any time</span>
+      </div>
+    </div>
+    <div class="art">
+      <div class="phones">
+        <img class="back" src="img/screen-ask.png" width="420" height="874" alt="BACI Ask screen answering how much money you have across 6 connected accounts">
+        <img class="front" src="img/screen-home.png" width="420" height="874" alt="BACI Home screen showing £3,758.58 available, savings, debts and upcoming bills">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Trust strip -->
+<section class="trust" aria-label="How BACI keeps you safe">
+  <div class="wrap">
+    <div class="trust-item"><div class="tile"><svg class="icon" width="22" height="22" stroke-width="1.9" aria-hidden="true"><use href="#i-bank"/></svg></div><div><strong>Regulated Open Banking</strong><small>Connect through your own bank</small></div></div>
+    <div class="trust-item"><div class="tile"><svg class="icon" width="22" height="22" stroke-width="1.9" aria-hidden="true"><use href="#i-shield"/></svg></div><div><strong>Secure Vault</strong><small>BACI can't move your money</small></div></div>
+    <div class="trust-item"><div class="tile"><svg class="icon" width="22" height="22" stroke-width="1.9" aria-hidden="true"><use href="#i-calendar"/></svg></div><div><strong>Consent you can see</strong><small>We record what you allowed, and when</small></div></div>
+    <div class="trust-item"><div class="tile"><svg class="icon" width="22" height="22" stroke-width="1.9" aria-hidden="true"><use href="#i-toggle"/></svg></div><div><strong>You stay in control</strong><small>Toggle, pause or disconnect</small></div></div>
+  </div>
+</section>
+
+<!-- Accounts -->
+<section id="accounts" class="section accounts">
+  <div class="wrap">
+    <div class="copy">
+      <p class="eyebrow">YOUR MONEY, TOGETHER</p>
+      <h2 class="h2">Every bank. Every card. One honest picture.</h2>
+      <p class="lede">Salary in one bank, spending in another, savings somewhere else. BACI brings current accounts, savings, ISAs, credit cards and loans together — and always tells you which accounts are up to date and which aren't.</p>
+      <ul class="banks">
+        <li class="bank">
+          <div class="who"><div class="mark" style="background:#2B3F7A" aria-hidden="true">N</div><div><strong>Northgate Building Society</strong><small>2 accounts · synced just now</small></div></div>
+          <span class="status ok"><svg class="icon" width="12" height="12" stroke-width="3" aria-hidden="true"><use href="#i-check"/></svg>Up to date</span>
+        </li>
+        <li class="bank">
+          <div class="who"><div class="mark" style="background:#1F5E66" aria-hidden="true">H</div><div><strong>Harbour Bank</strong><small>Last synced 3 days ago</small></div></div>
+          <span class="status warn">Out of date</span>
+        </li>
+        <li class="bank">
+          <div class="who"><div class="mark" style="background:#3A3F8F" aria-hidden="true">M</div><div><strong>Meridian Bank</strong><small>Left out of answers until you confirm</small></div></div>
+          <span class="status bad">Reconnect needed</span>
+        </li>
+      </ul>
+    </div>
+    <div class="art">
+      <img class="screen big" src="img/screen-accounts.png" width="420" height="874" loading="lazy" alt="BACI Accounts screen showing each bank's sync status, with options to re-authenticate, refresh or disconnect">
+    </div>
+  </div>
+</section>
+
+<!-- Intelligence layer -->
+<section class="section layer">
+  <div class="wrap">
+    <h2 class="h2">This is your financial intelligence layer.</h2>
+    <p class="lede">Connected data becomes something you can understand and act on — through proactive insights and a conversation.</p>
+    <div class="branch-stem" aria-hidden="true"></div>
+    <div class="branch-arms" aria-hidden="true"></div>
+    <div class="pillars">
+      <article class="pillar">
+        <div class="shot"><img class="screen" src="img/screen-insight.png" width="420" height="874" loading="lazy" alt="BACI first insight: you're paying for StreamFlix twice, saving about £131.88 a year"></div>
+        <div class="text"><h3>Understand</h3><p>BACI spots duplicate subscriptions, bills about to land and spending that's drifting from normal — and shows the evidence, period and confidence behind every insight.</p></div>
+      </article>
+      <article class="pillar">
+        <div class="shot violet"><img class="screen" src="img/screen-afford.png" width="420" height="874" loading="lazy" alt="BACI answering Can I afford a £1,200 laptop: affordable but tight, with the financial impact"></div>
+        <div class="text"><h3>Ask</h3><p>"Can I afford a £1,200 laptop?" BACI checks every account, upcoming bill and your goal, then explains why — including when a purchase dips below your buffer.</p></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- How it works -->
+<section id="how" class="section how">
+  <div class="wrap">
+    <div class="head-row">
+      <div>
+        <p class="eyebrow">HOW IT WORKS</p>
+        <h2 class="h2">From scattered accounts to clear decisions in minutes.</h2>
+      </div>
+      <a class="btn" href="../">Get started</a>
+    </div>
+    <ol class="steps">
+      <li>
+        <img class="screen" src="img/screen-welcome.png" width="420" height="874" loading="lazy" alt="BACI introduction screen with Secure Vault and Smart Alerts">
+        <div><span class="step-num" aria-hidden="true">1</span><h3><span class="sr">Step 1: </span>Meet your agent</h3><p>See what BACI does, how it keeps you safe, and what it will never do.</p></div>
+      </li>
+      <li>
+        <img class="screen" src="img/screen-permissions.png" width="420" height="874" loading="lazy" alt="BACI data permissions screen with toggles for nine data categories">
+        <div><span class="step-num" aria-hidden="true">2</span><h3><span class="sr">Step 2: </span>Choose what it sees</h3><p>Allow transactions, bills, savings, cards and more — one category at a time.</p></div>
+      </li>
+      <li>
+        <img class="screen" src="img/screen-add-account.png" width="420" height="874" loading="lazy" alt="BACI add another account screen listing connected banks">
+        <div><span class="step-num" aria-hidden="true">3</span><h3><span class="sr">Step 3: </span>Connect every bank</h3><p>Add accounts across different banks. BACI tells you when answers may be incomplete.</p></div>
+      </li>
+      <li>
+        <div class="chat-mock" role="img" aria-label="BACI chat: BACI offers to answer questions about your money and you ask how much money you have">
+          <div class="bot">Hi, I'm BACI. Ask me anything about your money.</div>
+          <div class="chip">What bills are coming up?</div>
+          <div class="chip">Can I buy this sofa on finance?</div>
+          <div class="me">How much money do I have?</div>
+        </div>
+        <div><span class="step-num accent" aria-hidden="true">4</span><h3><span class="sr">Step 4: </span>Ask anything</h3><p>Get a first insight straight away, then ask questions in plain English, by text or voice.</p></div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- Questions -->
+<section class="section questions">
+  <div class="wrap">
+    <div class="head-row">
+      <h2 class="h2">The money questions you actually have.</h2>
+      <p class="lede">No dashboards to decode. Just ask — BACI answers from your real, connected data.</p>
+    </div>
+    <div class="q-grid">
+      <div class="q"><strong>"How much money do I actually have?"</strong><p>Cash, savings and debts — with debts never counted as cash.</p></div>
+      <div class="q"><strong>"Where is my money going?"</strong><p>Spending by category, across every card and bank.</p></div>
+      <div class="q hot"><strong>"Can I afford a £1,200 laptop?"</strong><p>Your balance, bills, buffer and goal — checked together.</p></div>
+      <div class="q"><strong>"What bills are coming up?"</strong><p>Rent, repayments and direct debits before they land.</p></div>
+      <div class="q"><strong>"Can I buy this sofa on finance?"</strong><p>Instalments, total cost and monthly impact.</p></div>
+      <div class="q"><strong>"Will this slow down my savings?"</strong><p>See the trade-off in days before you commit.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- Security -->
+<section id="security" class="section security">
+  <div class="wrap">
+    <div class="center-head">
+      <h2 class="h2">Intelligence you can trust.</h2>
+      <p class="lede">Answers are only as good as the data behind them. BACI is open about what it knows — and asks rather than guesses when it doesn't.</p>
+    </div>
+    <div class="features">
+      <div class="feature"><div class="tile"><svg class="icon" width="26" height="26" stroke-width="1.8" aria-hidden="true"><use href="#i-shield"/></svg></div><h3>Secure Vault</h3><p>Read-only access through regulated Open Banking. BACI never sees your bank password and can't move money.</p></div>
+      <div class="feature"><div class="tile"><svg class="icon" width="26" height="26" stroke-width="1.8" aria-hidden="true"><use href="#i-bell"/></svg></div><h3>Smart Alerts</h3><p>Heads-ups before bills land, duplicate subscriptions, and spending that's drifting from normal.</p></div>
+      <div class="feature"><div class="tile"><svg class="icon" width="26" height="26" stroke-width="1.8" aria-hidden="true"><use href="#i-clock"/></svg></div><h3>Freshness, always shown</h3><p>If an account hasn't synced, BACI tells you figures may be out of date — and which answers it affects.</p></div>
+      <div class="feature"><div class="tile"><svg class="icon" width="26" height="26" stroke-width="1.8" aria-hidden="true"><use href="#i-explain"/></svg></div><h3>Explainable answers</h3><p>Every answer shows the accounts used, the reasoning and the financial impact — never a bare yes or no.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- Call to action -->
+<section id="cta" class="section cta">
+  <div class="wrap">
+    <img class="orb" src="img/logo.png" width="96" height="96" alt="">
+    <h2>Understand your money now.</h2>
+    <p class="free">Start for free.</p>
+    <div class="cta-card">
+      <ul>
+        <li><svg class="icon" width="22" height="22" stroke-width="2.4" aria-hidden="true"><use href="#i-check"/></svg>See every account in one view, with debts kept separate</li>
+        <li><svg class="icon" width="22" height="22" stroke-width="2.4" aria-hidden="true"><use href="#i-check"/></svg>Find duplicate subscriptions and bills before they land</li>
+        <li><svg class="icon" width="22" height="22" stroke-width="2.4" aria-hidden="true"><use href="#i-check"/></svg>Ask "can I afford this?" before you buy</li>
+        <li><svg class="icon" width="22" height="22" stroke-width="2.4" aria-hidden="true"><use href="#i-check"/></svg>Track your goal and see what helps or slows it</li>
+        <li><svg class="icon" width="22" height="22" stroke-width="2.4" aria-hidden="true"><use href="#i-check"/></svg>Read-only and revocable — always</li>
+      </ul>
+      <form class="cta-form" action="../auth" method="get">
+        <label class="sr" for="cta-email">Email address</label>
+        <input id="cta-email" type="email" placeholder="you@example.com" autocomplete="email" required>
+        <button class="btn" type="submit">Get early access</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section id="pricing" class="section pricing">
+  <div class="wrap">
+    <div class="center-head">
+      <h2 class="h2">Build your future now. For free.</h2>
+      <p class="lede">Get the full picture for free. Upgrade when you want BACI working harder for you.</p>
+    </div>
+    <div class="table-box">
+      <table class="plans">
+        <thead>
+          <tr>
+            <th scope="col">What's included</th>
+            <th scope="col"><div class="name">Free</div><div class="price">£0 / month</div></th>
+            <th scope="col" class="premium"><div class="badge">Most popular</div><div class="name">Premium</div><div class="price">£[PRICE] / month</div></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Connected accounts</th><td>Up to 2</td><td class="premium strong">Unlimited</td></tr>
+          <tr><th scope="row">Consolidated home view</th><td><svg class="icon" width="20" height="20" stroke-width="2.4" role="img" aria-label="Included"><use href="#i-check"/></svg></td><td class="premium"><svg class="icon" width="20" height="20" stroke-width="2.4" role="img" aria-label="Included"><use href="#i-check"/></svg></td></tr>
+          <tr><th scope="row">Insights &amp; subscription finder</th><td><svg class="icon" width="20" height="20" stroke-width="2.4" role="img" aria-label="Included"><use href="#i-check"/></svg></td><td class="premium"><svg class="icon" width="20" height="20" stroke-width="2.4" role="img" aria-label="Included"><use href="#i-check"/></svg></td></tr>
+          <tr><th scope="row">Upcoming bills &amp; repayments</th><td><svg class="icon" width="20" height="20" stroke-width="2.4" role="img" aria-label="Included"><use href="#i-check"/></svg></td><td class="premium"><svg class="icon" width="20" height="20" stroke-width="2.4" role="img" aria-label="Included"><use href="#i-check"/></svg></td></tr>
+          <tr><th scope="row">Questions to Ask BACI</th><td>[N] / month</td><td class="premium strong">Unlimited</td></tr>
+          <tr><th scope="row">"Can I afford this?" with financial impact</th><td class="none"><span aria-hidden="true">—</span><span class="sr">Not included</span></td><td class="premium"><svg class="icon" width="20" height="20" stroke-width="2.4" role="img" aria-label="Included"><use href="#i-check"/></svg></td></tr>
+          <tr><th scope="row">Goal tracking &amp; buffer warnings</th><td class="none"><span aria-hidden="true">—</span><span class="sr">Not included</span></td><td class="premium"><svg class="icon" width="20" height="20" stroke-width="2.4" role="img" aria-label="Included"><use href="#i-check"/></svg></td></tr>
+          <tr><th scope="row">Smart Alerts</th><td class="none"><span aria-hidden="true">—</span><span class="sr">Not included</span></td><td class="premium"><svg class="icon" width="20" height="20" stroke-width="2.4" role="img" aria-label="Included"><use href="#i-check"/></svg></td></tr>
+          <tr><th scope="row">Voice conversations with BACI</th><td class="none"><span aria-hidden="true">—</span><span class="sr">Not included</span></td><td class="premium"><svg class="icon" width="20" height="20" stroke-width="2.4" role="img" aria-label="Included"><use href="#i-check"/></svg></td></tr>
+          <tr class="actions"><td></td><td><a class="btn sm ghost" href="../">Start free</a></td><td class="premium"><a class="btn sm" href="../">Go Premium</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="top">
+      <div class="about">
+        <a class="logo" href="#top" aria-label="BACI home"><img src="img/logo.png" alt=""><span>BAC<b>I</b></span></a>
+        <p>One clear view of all your money, and an agent that explains it.</p>
+      </div>
+      <div class="cols">
+        <nav class="col" aria-label="Product"><strong>Product</strong><a href="#accounts">Accounts</a><a href="#how">How it works</a><a href="#pricing">Pricing</a></nav>
+        <nav class="col" aria-label="Trust"><strong>Trust</strong><a href="#security">Security</a><a href="#security">Privacy</a><a href="#security">Data permissions</a></nav>
+        <nav class="col" aria-label="Company"><strong>Company</strong><a href="#top">About</a><a href="#top">Contact</a></nav>
+      </div>
+    </div>
+    <p class="legal">BACI provides information, not regulated financial advice. It uses only the data you choose to connect and does not move money on your behalf. Screens and figures shown are illustrative. © 2026 BACI.</p>
+  </div>
+</footer>
+
+</body>
+</html>

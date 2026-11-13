@@ -2,6 +2,7 @@
 
 Finance intelligence agent.
 - **App:** `mobile/` (Expo; see `mobile/README.md` and `mobile/AGENTS.md`).
+- **Website:** `website/` (plain HTML and CSS landing page, served at `/BACI/site/`; colours mirror `mobile/src/theme.ts`).
 - **API:** `server/` (Node 22, Hono, Postgres, Plaid; see `server/README.md`).
 - **Going live and every external dependency:** `docs/LAUNCH.md`.
 
